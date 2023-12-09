@@ -1,0 +1,23 @@
+{
+    "app_name": "Product Identifier",
+    "identify_products": "Identify Products",
+    "storage_availability": "Your browser does not support Local Storage/Cookies!\nPlease enable cookies in your browser settings or disable incognito mode.\nThank you.",
+    "reload": "Please reload the page.",
+    "tab_list": ["List Product", "Identify Product"],
+    "search_items": "Search Product, Product ID, or Vendor",
+    "sort_products": ["Name (ASC)", "Name (DESC)", "Date Created (ASC)", "Date Created (DESC)", "Tag (ASC)", "Tag (DESC)"],
+    "empty_list": "No product found.",
+    "scanner_state_error": ["An error occurred:", "Please reload the page.", "Failed to clear html5QrcodeScanner."],
+    "scanner_text_error": ["No barcode found in the image.", "Error reading barcode from image."],
+    "device_orientation_alert": "Camera works well in portrait orientation.",
+    "camera_permission": "Allow Camera Access",
+    "camera_title_alert": ["Failed to access camera", "Connection is not Secure", "Camera Access Denied"],
+    "camera_text_alert": ["", "Please make sure your browser uses HTTPS protocol", "Please allow camera access in your browser settings"],
+    "img_extension_title_alert": "Unsupported file type!",
+    "img_extension_text_alert": "Please select an image file.",
+    "recognizing": "Identifying...",
+    "canvas_is_null": "Canvas element is null.",
+    "recognition_error": "Failed to recognize text.",
+    "color_changer": ["Normal", "Inverted", "Grayscale", "Grayscale Inverted"],
+    "conversion_error": "Failed to convert canvas to blob."
+}

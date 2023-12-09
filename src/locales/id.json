@@ -1,0 +1,23 @@
+{
+    "app_name": "Identifikasi Produk",
+    "identify_products": "Identifikasi Produk",
+    "storage_availability": "Browser Anda tidak mendukung Local Storage/Cookies pada browser Anda tidak diizinkan!\nSilakan izinkan cookies di pengaturan browser Anda atau ganti browser Anda serta tidak mengaktifkan incognito mode (mode penyamaran).\nTerima kasih",
+    "reload": "Silakan muat ulang halaman ini.",
+    "tab_list": ["Daftar Produk", "Identifikasi Produk"],
+    "search_items": "Cari Produk, ID Produk, atau Vendor",
+    "sort_products": ["Nama (Menaik)", "Nama (Menurun)", "Dibuat (Menaik)", "Dibuat (Menurun)", "Tanda (Menaik)", "Tanda (Menurun)"],
+    "empty_list": "Daftar Produk Kosong.",
+    "scanner_state_error": ["Terjadi kesalahan:", "Silakan muat ulang halaman ini.", "Gagal membersihkan html5QrcodeScanner."],
+    "scanner_text_error": ["Tidak ada barcode yang ditemukan dalam gambar.", "Kesalahan membaca barcode dari gambar."],
+    "device_orientation_alert": "Kamera dapat berfungsi dengan optimal pada poisisi portrait.",
+    "camera_permission": "Izinkan Akses Kamera",
+    "camera_title_alert": ["Gagal Mengakses Kamera", "Sambungan Tidak Aman", "Akses Kamera Ditolak"],
+    "camera_text_alert": ["", "Pastikan browser Anda menggunakan protokol HTTPS", "Pastikan Anda telah Mengizinkan Akses Kamera"],
+    "img_extension_title_alert": "Tipe File Tidak Didukung!",
+    "img_extension_text_alert": "Silakan pilih file gambar.",
+    "recognizing": "Mengidentifikasi...",
+    "canvas_is_null": "Elemen Canvas null.",
+    "recognition_error": "Gagal mengekstrak teks.",
+    "color_changer": ["Normal", "Invers", "Monokrom", "Invers Monokrom"],
+    "conversion_error": "Gagal mengkonversi canvas ke blob."
+}
