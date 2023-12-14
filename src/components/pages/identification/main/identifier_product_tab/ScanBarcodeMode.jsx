@@ -11,7 +11,7 @@ class ScanBarcodeMode extends React.Component {
     super(props)
     this.barcodeReader = null
     this.state = {
-      facingMode: 'user',
+      facingMode: 'environment',
       aspectRatio: 1,
       scannedResult: '',
       productName: '',
@@ -198,7 +198,7 @@ class ScanBarcodeMode extends React.Component {
   switchCamera() {
     this.onClearScanner()
     this.setState(prevState => ({
-      facingMode: prevState.facingMode === 'user' ? 'environment' : 'user'
+      facingMode: prevState.facingMode === 'environment' ? 'user' : 'environment'
     }), () => this.initScanner(this.barcodeReader, this.state.aspectRatio))
   }
 

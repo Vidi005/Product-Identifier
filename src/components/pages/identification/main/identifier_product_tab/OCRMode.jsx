@@ -25,7 +25,7 @@ class OCRMode extends React.Component {
       origin: '',
       description: '',
       source: '',
-      facingMode: 'user',
+      facingMode: 'environment',
       imgFile: null,
       filteredImgFile: null,
       recognizedTexts: '',
@@ -73,7 +73,9 @@ class OCRMode extends React.Component {
           this.cameraRef.current.srcObject = this.stream
         })
       } catch (error) {
-        this.setState({ isCameraPermissionGranted: false })
+        this.setState(() => ({
+          isCameraPermissionGranted: false
+        }))
         Swal.fire({
           icon: 'error',
           title: this.props.t('camera_title_alert.0'),
@@ -93,12 +95,12 @@ class OCRMode extends React.Component {
     this.stopCamera()
     this.setState(prevState => ({
       isPreviewRemoved: true,
-      facingMode: prevState.facingMode === 'user' ? 'environment' : 'user'
+      facingMode: prevState.facingMode === 'environment' ? 'user' : 'environment'
     }), () => this.setUpCamera())
   }
 
   captureImage () {
-    if (this.state.isCameraPermissionGranted && this.state.isPreviewRemoved) {
+    if (this.stream && this.state.isPreviewRemoved) {
       this.setState(prevState => ({
         isBtnCaptureClicked: !prevState.isBtnCaptureClicked,
         isRecognizing: true
@@ -141,10 +143,13 @@ class OCRMode extends React.Component {
       isRecognizing: true
     }), () => {
       const file = files[0]
-      const validImageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'heic']
+      const validImageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'heic', 'svg']
       const fileExtension = file.name.split('.').pop().toLowerCase()
       if (!validImageExtensions.includes(fileExtension)) {
-        this.setState({ isRecognizing: false }, () => {
+        this.setState({
+          isRecognizing: false,
+          isPreviewRemoved: true
+        }, () => {
           Swal.fire({
             icon: 'error',
             title: this.props.t('img_extension_title_alert'),
@@ -343,6 +348,8 @@ class OCRMode extends React.Component {
     this.stopCamera()
     this.setUpCamera()
     this.setState({
+      imgFile: null,
+      filteredImgFile: null,
       isPreviewRemoved: true
     })
   }
@@ -357,34 +364,36 @@ class OCRMode extends React.Component {
   render() {
     return (
       <React.Fragment>
-        {
-          this.state.isCameraPermissionGranted
-            ? <CameraContainer
-                props={this.props}
-                cameraRef={this.cameraRef}
-                containerRef={this.containerRef}
-                previewRef={this.previewRef}
-                canvasRef={this.canvasRef}
-                imgFile={this.state.filteredImgFile}
-                isPreviewRemoved={this.state.isPreviewRemoved}
-                discardPreview={this.discardPreview.bind(this)}
-                isRecognizing={this.state.isRecognizing}
-                boundingBoxes={this.state.boundingBoxes}
-                filterImage={this.filterImage.bind(this)}
-              />
-            : null
-        }
-        {
-          this.stream
-            ? (
-              <div className="camera-menu absolute grid grid-cols-3 place-items-center justify-between bg-gradient-to-t from-black w-full p-2 bottom-0">
-                <ImagePicker pickImage={this.pickImage.bind(this)}/>
-                <button className="h-14 w-14 p-0.5 border-4 border-double border-white rounded-full shadow-lg" onClick={this.captureImage.bind(this)}>
+        <CameraContainer
+          props={this.props}
+          cameraRef={this.cameraRef}
+          containerRef={this.containerRef}
+          previewRef={this.previewRef}
+          canvasRef={this.canvasRef}
+          imgFile={this.state.filteredImgFile}
+          isCameraReady={this.stream}
+          isPreviewRemoved={this.state.isPreviewRemoved}
+          discardPreview={this.discardPreview.bind(this)}
+          isRecognizing={this.state.isRecognizing}
+          boundingBoxes={this.state.boundingBoxes}
+          filterImage={this.filterImage.bind(this)}
+        />
+        <div className="camera-menu absolute grid grid-cols-3 place-items-center justify-between bg-gradient-to-t from-black w-full p-2 bottom-0">
+          <ImagePicker pickImage={this.pickImage.bind(this)}/>
+          {
+            this.state.isCameraPermissionGranted && this.state.isPreviewRemoved
+              ? <button className="h-14 w-14 p-0.5 border-4 border-double border-white rounded-full shadow-lg" onClick={this.captureImage.bind(this)}>
                   <span className="inline-block w-full h-full rounded-full bg-white active:bg-gray-300"></span>
                 </button>
-                <CameraSwitcher switchCamera={this.switchCamera.bind(this)}/>
-              </div>
-              )
+              : <button className="h-14 w-14 p-0.5 border-4 border-double border-gray-500 rounded-full shadow-inner" disabled>
+                  <span className="inline-block w-full h-full rounded-full bg-gray-500"></span>
+                </button>
+          }
+          <CameraSwitcher switchCamera={this.switchCamera.bind(this)}/>
+        </div>
+        {
+          this.stream
+            ? null
             : (
               <div className="flex justify-center items-center w-full h-full">
                 <button

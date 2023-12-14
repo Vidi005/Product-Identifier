@@ -1,18 +1,25 @@
 import React from "react"
 import FilterMenu from "./FilterMenu"
 
-const CameraContainer = ({ props, cameraRef, canvasRef, containerRef, previewRef, imgFile, isPreviewRemoved, isRecognizing, boundingBoxes, discardPreview, filterImage }) => (
+const CameraContainer = ({ props, cameraRef, canvasRef, containerRef, previewRef, imgFile, isCameraReady, isPreviewRemoved, isRecognizing, boundingBoxes, discardPreview, filterImage }) => (
   <React.Fragment>
     {isPreviewRemoved
-      ? <video
-          ref={cameraRef}
-          className="tab-identifier__capture w-full"
-          autoFocus
-          autoPlay
-          playsInline
-          muted
-          width="100%">
-        </video>
+      ? (
+        <React.Fragment>
+          {isCameraReady
+            ? <video
+                ref={cameraRef}
+                className="tab-identifier__capture w-full"
+                autoFocus
+                autoPlay
+                playsInline
+                muted
+                width="100%">
+              </video>
+            : null
+          }
+        </React.Fragment>
+        )
       : (
         <div ref={containerRef} className="tab-identifier__preview absolute inset-0 max-h-full overflow-hidden">
           <img ref={previewRef} className="m-auto max-h-full object-center object-contain" src={imgFile} alt="Image Preview" />
