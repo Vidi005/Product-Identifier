@@ -4,6 +4,8 @@ import HeaderContainer from "./header/HeaderContainer"
 import { withTranslation } from "react-i18next"
 import { isStorageExist } from "../../../utils/data"
 import MainContainer from "./main/MainContainer"
+import { timeOut } from "../../../utils/aborter"
+import Swal from "sweetalert2"
 
 class IdentificationPage extends React.Component {
   constructor(props) {
@@ -11,40 +13,75 @@ class IdentificationPage extends React.Component {
     this.state = {
       LANGUAGE_STORAGE_KEY: 'LANGUAGE_STORAGE_KEY',
       DISPLAY_MODE_STORAGE_KEY: 'DISPLAY_MODE_STORAGE_KEY',
+      PRODUCT_STORAGE_KEY: 'PRODUCT_STORAGE_KEY',
       getProductList: [],
       getProductsPerPage: [],
-      getSortedProducts: [],
-      getSelectedProducts: '',
+      getFilteredProducts: [],
+      getSelectedProduct: '',
+      getDeletingProduct: '',
       searchQuery: '',
+      sortBy: this.props.t('sort_products'),
       page: 1,
       itemsPerPage: 20,
-      selectedLanguage: "en",
+      selectedLanguage: 'en',
+      tagColor: '',
       isDarkModeEnabled: false,
       isProductListLoading: false,
-      isProductItemModalOpened: false
+      isEditBtnClicked: false,
+      isSavedToLocalStorage: false,
+      isProductItemModalOpened: false,
+      isDetailBtnClicked: false,
+      isDeleteBtnClicked: false
     }
   }
 
   componentDidMount() {
     this.checkLocalStorage()
+    if (this.state.isEditBtnClicked) {
+      addEventListener('beforeunload', this.onUnloadPage)
+    }
+  }
+
+  componentWillUnmount() {
+    if (!this.state.isEditBtnClicked) {
+      removeEventListener('beforeunload', this.onUnloadPage)
+    }
   }
 
   checkLocalStorage () {
     isStorageExist(this.props.t('storage_availability'))
     if (isStorageExist('')) {
-      const getLangDataFromLocal = localStorage.getItem(this.state.LANGUAGE_STORAGE_KEY)
-      try {
-        const parsedLangData = JSON.parse(getLangDataFromLocal)
-        if (parsedLangData !== undefined) {
-          this.setState({ selectedLanguage: parsedLangData },
-            () => this.changeLanguage(parsedLangData))
-        } else this.changeLanguage(this.state.selectedLanguage)
-      } catch (error) {
-        localStorage.removeItem(this.state.LANGUAGE_STORAGE_KEY)
-        alert(`Error: ${error.message}\n${this.props.t('reload')}`)
-      }
+      this.checkLanguageData()
+      this.checkProductData()
     } else {
       return
+    }
+  }
+
+  checkLanguageData () {
+    const getLangDataFromLocal = localStorage.getItem(this.state.LANGUAGE_STORAGE_KEY)
+    try {
+      const parsedLangData = JSON.parse(getLangDataFromLocal)
+      if (parsedLangData !== undefined) {
+        this.setState({ selectedLanguage: parsedLangData },
+          () => this.changeLanguage(parsedLangData))
+      } else this.changeLanguage(this.state.selectedLanguage)
+    } catch (error) {
+      localStorage.removeItem(this.state.LANGUAGE_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
+    }
+  }
+
+  checkProductData () {
+    const getProductDataFromLocal = localStorage.getItem(this.state.PRODUCT_STORAGE_KEY)
+    try {
+      const parsedProductData = JSON.parse(getProductDataFromLocal)
+      if (parsedProductData !== undefined) {
+        this.loadProductData()
+      } else this.fetchProductList()
+    } catch (error) {
+      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
     }
   }
 
@@ -58,14 +95,213 @@ class IdentificationPage extends React.Component {
     const { i18n } = this.props
     this.setState({ selectedLanguage: lang }, () => {
       i18n.changeLanguage(this.state.selectedLanguage)
-      this.saveData(lang)
+      this.saveLangData(lang)
     })
   }
 
-  saveData = selectedLanguage => {
+  saveLangData = selectedLanguage => {
     if (isStorageExist(this.props.t('storage_availability'))) {
       localStorage.setItem(this.state.LANGUAGE_STORAGE_KEY, JSON.stringify(selectedLanguage))
     }
+  }
+
+  loadProductData() {
+    const getProductDataFromLocal = localStorage.getItem(this.state.PRODUCT_STORAGE_KEY)
+    try {
+      const parsedProductData = JSON.parse(getProductDataFromLocal)
+      if (parsedProductData !== null) {
+        if (Object.keys(parsedProductData).length > 0) {
+          this.setState({
+            getProductList: parsedProductData,
+            getFilteredProducts: parsedProductData
+          }, () => this.loadProductsPerPage())
+        } else {
+          localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+          this.setState({
+            getProductList: [],
+            getFilteredProducts: []
+          }, () => this.loadProductsPerPage())
+        }
+        this.setState({ isProductListLoading: false })
+      } else this.fetchProductList()
+    } catch (error) {
+      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
+    }
+  }
+
+  loadProductsPerPage () {
+    this.setState({
+      getProductsPerPage: this.state.getFilteredProducts.slice(
+        (this.state.page - 1) * this.state.itemsPerPage,
+        this.state.page * this.state.itemsPerPage)
+    })
+  }
+
+  fetchProductList() {
+    const productsUrl = import.meta.env.VITE_PRODUCT_LIST_URL
+    this.setState(prevState => ({ ...prevState, isProductListLoading: true }))
+    fetch(productsUrl, {
+      mode: 'cors',
+      signal: timeOut(20).signal
+    }).then(response => response.json()).then(response => {
+      if (Object.entries(response?.data?.product_list).length > 0) {
+        this.setState({
+          getProductList: response.data.product_list,
+          isProductListLoading: false
+        }, () => {
+          this.sortProductList(this.state.sortBy)
+          this.saveProductData()
+        })
+      } else {
+        this.setState({ isProductListLoading: false })
+        Swal.fire(this.props.t('empty_data_alert'), '', 'warning')
+      }
+    }).then(() => this.loadProductData())
+    .catch(error => {
+      Swal.fire(this.props.t('fetch_error'), error.message, 'error')
+      this.setState({ isProductListLoading: false })
+    })
+  }
+
+  saveProductData() {
+    if (isStorageExist(this.props.t('storage_availability'))) {
+      const productsStringData = JSON.stringify(this.state.getProductList)
+      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      localStorage.setItem(this.state.PRODUCT_STORAGE_KEY, productsStringData)
+    }
+  }
+
+  searchHandler (query) {
+    const dataCopy = this.state.getProductList.map(productItem => ({ ...productItem }))
+    this.setState({ searchQuery: query.toLowerCase() }, () => {
+      if (this.state.searchQuery === '') {
+        this.sortProductList(this.state.sortBy)
+      } else {
+        // const filteredProducts = dataCopy.filter(productItem => 
+        //   productItem.product_name.toLowerCase().includes(this.state.searchQuery))
+        // const filteredVendors = dataCopy.filter(productItem => 
+        //   productItem.vendor.toLowerCase().includes(this.state.searchQuery))
+        // const filteredOrigins = dataCopy.filter(productItem => 
+        //   productItem.origin.toLowerCase().includes(this.state.searchQuery))
+        // const filteredTags = dataCopy.filter(productItem => 
+        //   productItem.name_tag.toLowerCase().includes(this.state.searchQuery))
+        // const combinedData = [...filteredProducts, ...filteredVendors, ...filteredOrigins, ...filteredTags]
+        // const filteredData = [...new Set(combinedData)]
+        const filteredData = dataCopy.filter(productItem => 
+          productItem.product_name.toLowerCase().includes(this.state.searchQuery) ||
+          productItem.vendor.toLowerCase().includes(this.state.searchQuery) ||
+          productItem.origin.toLowerCase().includes(this.state.searchQuery) ||
+          productItem.name_tag.toLowerCase().includes(this.state.searchQuery)
+        )
+        this.setState({ getFilteredProducts: filteredData }, () => this.loadProductsPerPage())
+        this.onSelectNavHandler(0)
+      }
+    })
+  }
+
+  onClickSyncBtn () {
+    this.fetchProductList()
+  }
+
+  onClickDeleteAllBtn () {
+    if (isStorageExist(this.props.t('storage_availability'))) {
+      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      this.setState({ getProductList: [] })
+    }
+  }
+  
+  sortProductList(sort) {
+    const dataCopy = [...this.state.getProductList]
+    if (sort === this.props.t('sort_products.0')) {
+      const sortProductsByName = dataCopy.sort((a, b) => (a.product_name > b.product_name) ? 1 : -1)
+      this.setState({ getFilteredProducts: sortProductsByName }, () => this.loadProductsPerPage())
+    } else if (sort === this.props.t('sort_products.1')) {
+      const sortProductsByNameDesc = dataCopy.sort((a, b) => b.product_name.toLowerCase().localeCompare(a.product_name.toLowerCase()))
+      this.setState({ getFilteredProducts: sortProductsByNameDesc }, () => this.loadProductsPerPage())
+    } else if (sort === this.props.t('sort_products.2')) {
+      const sortProductsByDate = dataCopy.sort((a, b) => {
+        const dateA = a.date_created ? new Date(a.date_created) : new Date(0)
+        const dateB = b.date_created ? new Date(b.date_created) : new Date(0)
+        return dateA - dateB
+      })
+      this.setState({ getFilteredProducts: sortProductsByDate }, () => this.loadProductsPerPage())
+    } else if (sort === this.props.t('sort_products.3')) {
+      const sortProductsByDateDesc = dataCopy.sort((a, b) => {
+        b.date_created ? new Date(b.date_created) : new Date(0) - a.date_created ? new Date(a.date_created) : new Date(0)
+      })
+      this.setState({ getFilteredProducts: sortProductsByDateDesc }, () => this.loadProductsPerPage())
+    } else if (sort === this.props.t('sort_products.4')) {
+      const sortProductsByTag = dataCopy.sort((a, b) => a.name_tag.toLowerCase().localeCompare(b.name_tag.toLowerCase()))
+      this.setState({ getFilteredProducts: sortProductsByTag }, () => this.loadProductsPerPage())
+    } else {
+      const sortProductsByTagDesc = dataCopy.sort((a, b) => (b.name_tag > a.name_tag) ? 1 : -1)
+      this.setState({ getFilteredProducts: sortProductsByTagDesc }, () => this.loadProductsPerPage())
+    }
+    this.onSelectNavHandler(0)
+    this.setState({ sortBy: sort })
+  }
+
+  onSelectNavHandler (navIndex) {
+    const lastPage = parseInt(this.state.getFilteredProducts.length / this.state.itemsPerPage)
+    if (navIndex === 0 && this.state.page > 1) this.setState({ page: 1 }, () => this.loadProductsPerPage())
+    else if (navIndex === 1 && this.state.page > 1) {
+      this.setState(prevState => ({ page: prevState.page - 1 }), () => this.loadProductsPerPage())
+    } else if (navIndex === 3 && this.state.page <= lastPage) {
+      this.setState(prevState => ({ page: prevState.page + 1 }, () => this.loadProductsPerPage()))
+    } else if (navIndex === 4 && this.state.page <= lastPage) {
+      this.setState({ page: lastPage + 1 }, () => this.loadProductsPerPage())
+    }
+  }
+
+  findProductByIdx(idx) {
+    const findSelectedProduct = this.state.getProductList.find(productData => productData.index === parseInt(idx))
+    return findSelectedProduct
+  }
+
+  onClickDetailBtn (idx) {
+    const viewDetailProduct = this.findProductByIdx(idx)
+    if (viewDetailProduct !== undefined) {
+      this.setState({ getSelectedProduct: viewDetailProduct })
+    } else Swal.fire({ icon: 'error', title: this.props.t('product_not_found') })
+  }
+
+  onClickEditBtn (idx) {
+    const findOpenedProduct = this.findProductByIdx(idx)
+    if (findOpenedProduct !== undefined) {
+      this.setState({ getSelectedProduct: findOpenedProduct })
+    } else {
+      this.setState({ getSelectedProduct: {
+        index: +new Date(),
+        product_name: '',
+        product_ids: '',
+        category: '',
+        vendor: '',
+        origin: '',
+        date_created: '',
+        name_tag: '',
+        color_tag: '',
+        description: '',
+        alternatives: '',
+        source: '',
+      }})
+    }
+  }
+
+  onClickDeleteBtn (idx) {
+    if (this.findProductByIdx(idx) !== undefined) {
+      this.setState({
+        getDeletingProduct: this.findProductByIdx(idx),
+        isDeleteBtnClicked: true
+      })
+    } else {
+      Swal.fire(this.props.t('delete_title_alert.1'), this.props.t('delete_text_alert.1'), 'error')
+    }
+  }
+
+  onUnloadPage = event => {
+    event.preventDefault()
+    event.returnValue = this.props.t('reload_page_prompt')
   }
 
   render() {
@@ -85,6 +321,14 @@ class IdentificationPage extends React.Component {
         <MainContainer
           props={this.props}
           state={this.state}
+          searchItem={this.searchHandler.bind(this)}
+          onClickSyncBtn={this.onClickSyncBtn.bind(this)}
+          sortItems={this.sortProductList.bind(this)}
+          onSelectNavHandler={this.onSelectNavHandler.bind(this)}
+          onClickDeleteAllBtn={this.onClickDeleteAllBtn.bind(this)}
+          onClickDetailBtn={this.onClickDetailBtn.bind(this)}
+          onClickEditBtn={this.onClickEditBtn.bind(this)}
+          onClickDeleteBtn={this.onClickDeleteBtn.bind(this)}
         />
       </div>
     )

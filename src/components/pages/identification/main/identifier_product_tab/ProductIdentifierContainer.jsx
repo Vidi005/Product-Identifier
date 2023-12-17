@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react"
 import React from "react"
+import IdentifierBottomBar from "./IdentifierBottomBar"
 import OCRMode from "./OCRMode"
 import ScanBarcodeMode from "./ScanBarcodeMode"
 
@@ -42,9 +43,7 @@ const ProductIdentifierContainer = ({ props, selectedProduct }) => {
           </Tab>
         ))}
       </Tab.List>
-      <span className="w-full bg-black/95">
-        <br />
-      </span>
+      <IdentifierBottomBar/>
     </Tab.Group>
   )
 }
