@@ -21,7 +21,8 @@ class IdentificationPage extends React.Component {
       getDeletingProduct: '',
       searchQuery: '',
       sortBy: this.props.t('sort_products'),
-      page: 1,
+      currentPage: 1,
+      lastPage: 1,
       itemsPerPage: 20,
       selectedLanguage: 'en',
       tagColor: '',
@@ -42,6 +43,10 @@ class IdentificationPage extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    document.body.classList.toggle('dark', this.state.isDarkModeEnabled)
+  }
+
   componentWillUnmount() {
     if (!this.state.isEditBtnClicked) {
       removeEventListener('beforeunload', this.onUnloadPage)
@@ -51,10 +56,24 @@ class IdentificationPage extends React.Component {
   checkLocalStorage () {
     isStorageExist(this.props.t('storage_availability'))
     if (isStorageExist('')) {
+      this.checkDisplayMode()
       this.checkLanguageData()
       this.checkProductData()
     } else {
       return
+    }
+  }
+
+  checkDisplayMode () {
+    const getDisplayModeFromLocal = localStorage.getItem(this.state.DISPLAY_MODE_STORAGE_KEY)
+    try {
+      const parsedDisplayMode = JSON.parse(getDisplayModeFromLocal)
+      if (parsedDisplayMode !== undefined) {
+        this.setState({ isDarkModeEnabled: parsedDisplayMode })
+      }
+    } catch (error) {
+      localStorage.removeItem(this.state.DISPLAY_MODE_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
     }
   }
 
@@ -86,9 +105,9 @@ class IdentificationPage extends React.Component {
   }
 
   setDisplayMode () {
-    this.setState({
-      isDarkModeEnabled: !this.state.isDarkModeEnabled
-    })
+    this.setState(prevState => ({
+      isDarkModeEnabled: !prevState.isDarkModeEnabled
+    }), () => this.saveDisplayMode(this.state.isDarkModeEnabled))
   }
 
   changeLanguage = lang => {
@@ -97,6 +116,12 @@ class IdentificationPage extends React.Component {
       i18n.changeLanguage(this.state.selectedLanguage)
       this.saveLangData(lang)
     })
+  }
+
+  saveDisplayMode = selectedDisplayMode => {
+    if (isStorageExist(this.props.t('storage_availability'))) {
+      localStorage.setItem(this.state.DISPLAY_MODE_STORAGE_KEY, JSON.stringify(selectedDisplayMode))
+    }
   }
 
   saveLangData = selectedLanguage => {
@@ -131,10 +156,12 @@ class IdentificationPage extends React.Component {
   }
 
   loadProductsPerPage () {
+    const lastPage = parseInt(this.state.getFilteredProducts.length / this.state.itemsPerPage)
     this.setState({
       getProductsPerPage: this.state.getFilteredProducts.slice(
-        (this.state.page - 1) * this.state.itemsPerPage,
-        this.state.page * this.state.itemsPerPage)
+        (this.state.currentPage - 1) * this.state.itemsPerPage,
+        this.state.currentPage * this.state.itemsPerPage),
+      lastPage: lastPage + 1
     })
   }
 
@@ -178,16 +205,6 @@ class IdentificationPage extends React.Component {
       if (this.state.searchQuery === '') {
         this.sortProductList(this.state.sortBy)
       } else {
-        // const filteredProducts = dataCopy.filter(productItem => 
-        //   productItem.product_name.toLowerCase().includes(this.state.searchQuery))
-        // const filteredVendors = dataCopy.filter(productItem => 
-        //   productItem.vendor.toLowerCase().includes(this.state.searchQuery))
-        // const filteredOrigins = dataCopy.filter(productItem => 
-        //   productItem.origin.toLowerCase().includes(this.state.searchQuery))
-        // const filteredTags = dataCopy.filter(productItem => 
-        //   productItem.name_tag.toLowerCase().includes(this.state.searchQuery))
-        // const combinedData = [...filteredProducts, ...filteredVendors, ...filteredOrigins, ...filteredTags]
-        // const filteredData = [...new Set(combinedData)]
         const filteredData = dataCopy.filter(productItem => 
           productItem.product_name.toLowerCase().includes(this.state.searchQuery) ||
           productItem.vendor.toLowerCase().includes(this.state.searchQuery) ||
@@ -243,14 +260,13 @@ class IdentificationPage extends React.Component {
   }
 
   onSelectNavHandler (navIndex) {
-    const lastPage = parseInt(this.state.getFilteredProducts.length / this.state.itemsPerPage)
-    if (navIndex === 0 && this.state.page > 1) this.setState({ page: 1 }, () => this.loadProductsPerPage())
-    else if (navIndex === 1 && this.state.page > 1) {
-      this.setState(prevState => ({ page: prevState.page - 1 }), () => this.loadProductsPerPage())
-    } else if (navIndex === 3 && this.state.page <= lastPage) {
-      this.setState(prevState => ({ page: prevState.page + 1 }, () => this.loadProductsPerPage()))
-    } else if (navIndex === 4 && this.state.page <= lastPage) {
-      this.setState({ page: lastPage + 1 }, () => this.loadProductsPerPage())
+    if (navIndex === 0 && this.state.currentPage > 1) this.setState({ currentPage: 1 }, () => this.loadProductsPerPage())
+    else if (navIndex === 1 && this.state.currentPage > 1) {
+      this.setState(prevState => ({ currentPage: prevState.currentPage - 1 }), () => this.loadProductsPerPage())
+    } else if (navIndex === 3 && this.state.currentPage <= this.state.lastPage - 1) {
+      this.setState(prevState => ({ currentPage: prevState.currentPage + 1 }), () => this.loadProductsPerPage())
+    } else if (navIndex === 4 && this.state.currentPage <= this.state.lastPage - 1) {
+      this.setState({ currentPage: this.state.lastPage }, () => this.loadProductsPerPage())
     }
   }
 
@@ -283,7 +299,7 @@ class IdentificationPage extends React.Component {
         color_tag: '',
         description: '',
         alternatives: '',
-        source: '',
+        sources: '',
       }})
     }
   }

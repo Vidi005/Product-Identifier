@@ -1,4 +1,5 @@
 import React from "react"
+import PaginationSection from "../navigation/PaginationSection"
 import ProductItemContent from "./ProductItemContent"
 import ProductListToolbar from "./ProductListToolbar"
 
@@ -24,6 +25,7 @@ const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortIt
           <article className="tab-product-list__content max-h-full my-1 font-sans text-sm overflow-y-auto animate__animated animate__fadeIn animate__faster">
             {state.getProductsPerPage.map((productItem, i) => (
               <ProductItemContent
+                t={props.t}
                 key={i}
                 index={productItem.index}
                 productName={productItem.product_name}
@@ -37,6 +39,14 @@ const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortIt
               />
             ))}
           </article>
+          <PaginationSection
+            t={props.t}
+            onSelectNavHandler={onSelectNavHandler}
+            numProducts={state.getFilteredProducts.length}
+            itemsPerPage={state.itemsPerPage}
+            pagePosition={state.currentPage}
+            lastPage={state.lastPage}
+          />
         </React.Fragment>
       )
     } else {

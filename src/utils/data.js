@@ -7,6 +7,14 @@ const isStorageExist = content => {
     }
   }
 
+const getNavIcons = () => [
+  'images/first-last-page-icon.svg',
+  'images/nav-page-icon.svg',
+  '',
+  'images/nav-page-icon.svg',
+  'images/first-last-page-icon.svg',
+]
+
 const convertDataURLtoFile = (dataUrl, filename) => {
   const arr = dataUrl.split(',')
   const mime = arr[0].match(/:(.*?);/)[1]
@@ -27,4 +35,4 @@ const convertDataURLtoBlob = (dataUrl) => {
   return new Blob([u8arr], { type: mime })
 }
 
-export { isStorageExist, convertDataURLtoFile, convertDataURLtoBlob }
+export { isStorageExist, getNavIcons, convertDataURLtoFile, convertDataURLtoBlob }

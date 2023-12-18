@@ -23,7 +23,7 @@ const MainContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, on
         ))}
       </Tab.List>
       <Tab.Panels className="h-full">
-        <Tab.Panel className="h-full animate__animated animate__fadeIn overflow-hidden">
+        <Tab.Panel className="h-full animate__animated animate__fadeIn overflow-x-hidden">
           <ProductListContainer
             props={props}
             state={state}

@@ -16,7 +16,7 @@ class ProductListSearch extends React.Component {
   render() {
     return (
       <input
-        className="grow mr-2 p-1 border border-green-800 dark:border-gray-100 bg-green-50 dark:bg-gray-900 dark:text-white rounded-lg shadow-inner dark:shadow-white"
+        className="grow mr-2 p-1 border border-green-800 dark:border-gray-100 bg-green-50 dark:bg-gray-900 dark:text-white rounded-lg shadow-inner dark:shadow-white/50"
         type="search"
         placeholder={this.props.t('search_items')}
         value={this.state.value}
