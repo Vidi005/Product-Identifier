@@ -6,6 +6,7 @@ import { isStorageExist } from "../../../utils/data"
 import MainContainer from "./main/MainContainer"
 import { timeOut } from "../../../utils/aborter"
 import Swal from "sweetalert2"
+import FooterContainer from "./footer/FooterContainer"
 
 class IdentificationPage extends React.Component {
   constructor(props) {
@@ -18,7 +19,6 @@ class IdentificationPage extends React.Component {
       getProductsPerPage: [],
       getFilteredProducts: [],
       getSelectedProduct: '',
-      getDeletingProduct: '',
       searchQuery: '',
       sortBy: this.props.t('sort_products'),
       currentPage: 1,
@@ -31,13 +31,13 @@ class IdentificationPage extends React.Component {
       isEditBtnClicked: false,
       isSavedToLocalStorage: false,
       isProductItemModalOpened: false,
-      isDetailBtnClicked: false,
-      isDeleteBtnClicked: false
+      isDetailBtnClicked: false
     }
   }
 
   componentDidMount() {
     this.checkLocalStorage()
+    this.searchHandler('')
     if (this.state.isEditBtnClicked) {
       addEventListener('beforeunload', this.onUnloadPage)
     }
@@ -224,7 +224,10 @@ class IdentificationPage extends React.Component {
   onClickDeleteAllBtn () {
     if (isStorageExist(this.props.t('storage_availability'))) {
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
-      this.setState({ getProductList: [] })
+      this.setState({
+        getProductList: [],
+        getFilteredProducts: []
+      })
     }
   }
   
@@ -306,9 +309,13 @@ class IdentificationPage extends React.Component {
 
   onClickDeleteBtn (idx) {
     if (this.findProductByIdx(idx) !== undefined) {
+      const remainingProducts = this.state.getProductList.filter(productData => productData.index !== parseInt(idx))
       this.setState({
-        getDeletingProduct: this.findProductByIdx(idx),
-        isDeleteBtnClicked: true
+        getProductList: remainingProducts,
+        getFilteredProducts: remainingProducts
+      }, () => {
+        this.sortProductList(this.state.sortBy)
+        this.saveProductData()
       })
     } else {
       Swal.fire(this.props.t('delete_title_alert.1'), this.props.t('delete_text_alert.1'), 'error')
@@ -322,7 +329,7 @@ class IdentificationPage extends React.Component {
 
   render() {
     return (
-      <div className="identification-page h-full">
+      <div className="identification-page h-screen flex flex-col dark:bg-black overflow-y-auto">
         <Helmet>
           <title>Identify Products</title>
           <meta name="description" content="Identify Products by QR Code, Barcode, Image, or Text Input."/>
@@ -346,6 +353,7 @@ class IdentificationPage extends React.Component {
           onClickEditBtn={this.onClickEditBtn.bind(this)}
           onClickDeleteBtn={this.onClickDeleteBtn.bind(this)}
         />
+        <FooterContainer/>
       </div>
     )
   }

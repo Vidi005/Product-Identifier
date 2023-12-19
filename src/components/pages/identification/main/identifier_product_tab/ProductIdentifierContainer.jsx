@@ -13,7 +13,7 @@ const ProductIdentifierContainer = ({ props, selectedProduct }) => {
     imgAlt: ['OCR Identifier', 'Barcode Identifier']
   }
   return (
-    <Tab.Group as={"article"} className={"tab-product-identifier__container flex flex-col justify-between h-full bg-black/95 font-sans text-white text-center animate__animated animate__fadeIn"}>
+    <Tab.Group as={"article"} className={"tab-product-identifier__container relative flex flex-col justify-between h-full bg-black/95 font-sans text-white text-center animate__animated animate__fadeIn"}>
       <Tab.Panels className="grow">
         <Tab.Panel className="product-identifier__ocr relative h-full animated__animated animated__fadeIn">
           <OCRMode props={props} selectedProduct={selectedProduct} />

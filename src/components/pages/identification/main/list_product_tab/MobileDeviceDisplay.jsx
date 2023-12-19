@@ -6,9 +6,9 @@ const MobileDeviceDisplay = ({ t, index, productName, productIds, category, vend
   ? (
     <div className="content__product-item md:hidden flex items-center duration-200 animate__animated animate__fadeInUp leading-normal m-1 pr-3 border border-gray-700 bg-gray-300 dark:border-gray-200 dark:bg-gray-700 rounded-lg shadow dark:shadow-white overflow-hidden">
       <span className="item-content grow text-black dark:text-white">
-        <h4 className="px-1 py-0.5">{productName}</h4>
-        <p className="px-1 py-0.5">Vendor: {vendor}</p>
-        <p className="px-1 py-0.5 text-white rounded-tr-3xl" style={{ backgroundColor: `${colorTag}`}}>{t('name_tag')}: {nameTag}</p>
+        <h4 className="px-1 py-1 leading-tight">{productName}</h4>
+        <p className="px-1 py-1 leading-tight">Vendor: {vendor}</p>
+        <p className="px-1 py-1 leading-tight text-white rounded-tr-3xl" style={{ backgroundColor: `${colorTag}`}}>{t('name_tag')}: {nameTag}</p>
       </span>
       <button className="detail-btn border border-green-700 ml-3 p-1 bg-green-700 active:bg-green-500 rounded-lg shadow dark:shadow-white" onClick={() => onClickDetailBtn(index)}>
         <img className="max-h-6 aspect-square" src="images/view-icon.svg" alt="Detail Button" />
@@ -41,7 +41,7 @@ const MobileDeviceDisplay = ({ t, index, productName, productIds, category, vend
                 Swal.fire({
                   icon: 'success',
                   title: t('delete_title_alert.2'),
-                  text: `${t('delete_text_alert.2')} "${productName}"`,
+                  text: `${t('delete_text_alert.2')} "${productName}".`,
                   confirmButtonColor: 'green',
                 })
                 onClickDeleteBtn(index)
@@ -58,9 +58,9 @@ const MobileDeviceDisplay = ({ t, index, productName, productIds, category, vend
   : (
     <div className="content__product-item md:hidden flex items-center duration-200 animate__animated animate__fadeInUp leading-normal m-1 pr-3 border border-gray-700 bg-white dark:border-gray-200 dark:bg-black rounded-lg shadow dar overflow-hidden">
       <span className="item-content grow text-black dark:text-white">
-        <h4 className="px-1 py-0.5">{productName}</h4>
-        <p className="px-1 py-0.5">Vendor: {vendor}</p>
-        <p className="px-1 py-0.5 text-white rounded-tr-3xl" style={{ backgroundColor: `${colorTag}`}}>{t('name_tag')}: {nameTag}</p>
+        <h4 className="px-1 py-1 leading-tight">{productName}</h4>
+        <p className="px-1 py-1 leading-tight">Vendor: {vendor}</p>
+        <p className="px-1 py-1 leading-tight text-white rounded-tr-3xl" style={{ backgroundColor: `${colorTag}`}}>{t('name_tag')}: {nameTag}</p>
       </span>
       <button className="detail-btn border border-green-700 ml-3 p-1 bg-green-700 active:bg-green-500 rounded-lg shadow dark:shadow-white" onClick={() => onClickDetailBtn(index)}>
         <img className="max-h-6 aspect-square" src="images/view-icon.svg" alt="Detail Button" />
@@ -94,7 +94,7 @@ const MobileDeviceDisplay = ({ t, index, productName, productIds, category, vend
                 Swal.fire({
                   icon: 'success',
                   title: t('delete_title_alert.2'),
-                  text: `${t('delete_text_alert.2')} "${productName}"`,
+                  text: `${t('delete_text_alert.2')} "${productName}".`,
                   confirmButtonColor: 'green',
                   confirmButtonText: t('confirmation_text')
                 })

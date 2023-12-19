@@ -6,9 +6,9 @@ import ProductIdentifierContainer from "./identifier_product_tab/ProductIdentifi
 import ProductListContainer from "./list_product_tab/ProductListContainer"
 
 const MainContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn }) => (
-  <main className="identifier-app__main h-screen lg:py-2 lg:px-20">
+  <main className="identifier-app__main grow lg:px-20">
     <Tab.Group as={"section"} className="tab-group h-full md:p-1 bg-green-50 dark:bg-black rounded-lg shadow-lg">
-      <Tab.List className="grid grid-cols-2 gap-2 sticky m-1 md:p-0 p-1 font-medium text-base bg-green-900/20 dark:bg-white/20 rounded-xl shadow-inner">
+      <Tab.List className="grid grid-cols-2 gap-2 sticky top-0 m-1 md:p-0 p-1 font-medium text-base bg-green-900/20 dark:bg-white/20 rounded-xl shadow-inner">
         {en.tab_list.map((tab, index) => (
           <Tab
             key={tab}
@@ -23,7 +23,7 @@ const MainContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, on
         ))}
       </Tab.List>
       <Tab.Panels className="h-full">
-        <Tab.Panel className="h-full animate__animated animate__fadeIn overflow-x-hidden">
+        <Tab.Panel className="max-h-screen animate__animated animate__fadeIn overflow-x-hidden">
           <ProductListContainer
             props={props}
             state={state}
