@@ -28,29 +28,29 @@ class IdentificationPage extends React.Component {
       tagColor: '',
       isDarkModeEnabled: false,
       isProductListLoading: false,
-      isEditBtnClicked: false,
+      isDetailModalOpened: false,
+      isEditModalOpened: false,
       isSavedToLocalStorage: false,
-      isProductItemModalOpened: false,
-      isDetailBtnClicked: false
+      isDetailBtnClicked: false,
+      isBtnCloseClicked: false
     }
   }
 
   componentDidMount() {
     this.checkLocalStorage()
     this.searchHandler('')
-    if (this.state.isEditBtnClicked) {
-      addEventListener('beforeunload', this.onUnloadPage)
-    }
   }
-
+  
   componentDidUpdate() {
     document.body.classList.toggle('dark', this.state.isDarkModeEnabled)
+    if (this.state.isEditModalOpened) {
+      document.body.style.overflow = 'hidden'
+      addEventListener('beforeunload', this.onUnloadPage)
+    } else document.body.style.overflow = 'unset'
   }
 
   componentWillUnmount() {
-    if (!this.state.isEditBtnClicked) {
-      removeEventListener('beforeunload', this.onUnloadPage)
-    }
+    removeEventListener('beforeunload', this.onUnloadPage)
   }
 
   checkLocalStorage () {
@@ -199,6 +199,15 @@ class IdentificationPage extends React.Component {
     }
   }
 
+  updateProductData() {
+    if (isStorageExist(this.props.t('storage_availability'))) {
+      const productData = this.state.getProductList
+      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      localStorage.setItem(this.state.PRODUCT_STORAGE_KEY, productData)
+      this.sortProductList(this.props.t('sort_products.3'))
+    } else Swal.fire(this.props.t('storage_title_alert'), this.props.t('storage_text_alert'), 'error')
+  }
+
   searchHandler (query) {
     const dataCopy = this.state.getProductList.map(productItem => ({ ...productItem }))
     this.setState({ searchQuery: query.toLowerCase() }, () => {
@@ -281,30 +290,94 @@ class IdentificationPage extends React.Component {
   onClickDetailBtn (idx) {
     const viewDetailProduct = this.findProductByIdx(idx)
     if (viewDetailProduct !== undefined) {
-      this.setState({ getSelectedProduct: viewDetailProduct })
+      this.setState({
+        isBtnCloseClicked: false,
+        isDetailModalOpened: true,
+        getSelectedProduct: viewDetailProduct
+      })
     } else Swal.fire({ icon: 'error', title: this.props.t('product_not_found') })
+  }
+
+  editProductHandler (idx, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources) {
+    const findSelectedProduct = this.findProductByIdx(idx)
+    if (findSelectedProduct === undefined) {
+      const addedProductData = this.state.getProductList
+      addedProductData.unshift({
+        idx,
+        productName,
+        productIds,
+        category,
+        vendor,
+        origin,
+        dateCreated,
+        nameTag,
+        colorTag,
+        description,
+        alternatives,
+        sources
+      })
+      this.setState({ getProductList: addedProductData }, () => this.updateProductData())
+    } else {
+      const editedProductData = this.state.getProductList.map(productItem => {
+        if (productItem.index === idx) {
+          return {
+            ...productItem,
+            productName,
+            productIds,
+            category,
+            vendor,
+            origin,
+            nameTag,
+            colorTag,
+            description,
+            alternatives,
+            sources
+          }
+        }
+        return productItem
+      })
+      this.setState({ getProductList: editedProductData, getFilteredProducts: editedProductData }, () => {
+        this.updateProductData()
+      })
+    }
   }
 
   onClickEditBtn (idx) {
     const findOpenedProduct = this.findProductByIdx(idx)
     if (findOpenedProduct !== undefined) {
-      this.setState({ getSelectedProduct: findOpenedProduct })
+      this.setState({
+        isBtnCloseClicked: false,
+        getSelectedProduct: findOpenedProduct,
+        isEditModalOpened: true
+      })
     } else {
-      this.setState({ getSelectedProduct: {
-        index: +new Date(),
-        product_name: '',
-        product_ids: '',
-        category: '',
-        vendor: '',
-        origin: '',
-        date_created: '',
-        name_tag: '',
-        color_tag: '',
-        description: '',
-        alternatives: '',
-        sources: '',
-      }})
+      this.setState({
+        isBtnCloseClicked: false,
+        isEditModalOpened: true,
+        getSelectedProduct: {
+          index: +new Date(),
+          product_name: '',
+          product_ids: '',
+          category: '',
+          vendor: '',
+          origin: '',
+          date_created: '',
+          name_tag: '',
+          color_tag: '',
+          description: '',
+          alternatives: '',
+          sources: ''
+        }
+      })
     }
+  }
+
+  onCloseModalHandler () {
+    this.setState({
+      isBtnCloseClicked: true,
+      isDetailModalOpened: false,
+      isEditModalOpened: false
+    })
   }
 
   onClickDeleteBtn (idx) {
@@ -352,6 +425,9 @@ class IdentificationPage extends React.Component {
           onClickDetailBtn={this.onClickDetailBtn.bind(this)}
           onClickEditBtn={this.onClickEditBtn.bind(this)}
           onClickDeleteBtn={this.onClickDeleteBtn.bind(this)}
+          findProductByIdx={this.findProductByIdx.bind(this)}
+          editProductItem={this.editProductHandler.bind(this)}
+          onCloseModal={this.onCloseModalHandler.bind(this)}
         />
         <FooterContainer/>
       </div>

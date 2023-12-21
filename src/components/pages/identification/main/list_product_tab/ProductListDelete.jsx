@@ -3,7 +3,7 @@ import { withTranslation } from "react-i18next"
 import Swal from "sweetalert2"
 
 const ProductListDelete = ({ t, onClickDeleteAllBtn }) => (
-  <button className="toolbar-delete-all mx-2 md:mx-3 p-1 bg-red-50 dark:bg-gray-300 hover:bg-red-400 dark:hover:bg-white duration-200 rounded-lg shadow dark:shadow-white" onClick={() => {
+  <button className="toolbar-delete-all mx-2 md:mr-0 md:flex items-center p-1 md:p-2 bg-red-50 md:bg-red-700 dark:bg-gray-300 md:dark:bg-red-800 hover:bg-red-400 md:hover:bg-red-500 dark:hover:bg-white md:dark:hover:bg-red-600 duration-200 rounded-lg shadow dark:shadow-white" onClick={() => {
     Swal.fire({
       title: t('delete_title_alert.3'),
       text: t('delete_text_alert.3'),
@@ -38,7 +38,9 @@ const ProductListDelete = ({ t, onClickDeleteAllBtn }) => (
       }
     })
   }}>
-    <img className="max-h-7 aspect-square" src="images/delete-sweep-icon.svg" alt="Delete All" />
+    <img className="md:hidden max-h-7 aspect-square md:mr-1" src="images/delete-sweep-icon.svg" alt="Delete All" />
+    <img className="hidden md:block max-h-7 aspect-square md:mr-1" src="images/dark-delete-sweep-icon.svg" alt="Delete All" />
+    <p className="hidden md:block text-white text-sm">Delete</p>
   </button>
 )
 

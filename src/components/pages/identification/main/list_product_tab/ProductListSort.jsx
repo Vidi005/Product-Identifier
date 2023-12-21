@@ -4,7 +4,7 @@ import { withTranslation } from "react-i18next"
 import en from "../../../../../locales/en.json"
 
 const ProductListSort = ({ t, sortProductsBy }) => (
-  <Menu as={"menu"} className="relative inline-block">
+  <Menu as={"menu"} className="toolbar-sort md:hidden relative inline-block">
     <Menu.Button className="bg-gray-50 dark:bg-gray-300 md:ml-1 p-1 hover:bg-gray-400 dark:hover:bg-white duration-200 rounded-lg shadow dark:shadow-white">
       <img className="max-h-7 aspect-square" src="images/sort-icon.svg" alt="Sort" />
     </Menu.Button>

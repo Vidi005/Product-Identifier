@@ -1,10 +1,10 @@
 import React from "react"
-import LargeDeviceDisplay from "./LargeDeviceDisplay"
-import MobileDeviceDisplay from "./MobileDeviceDisplay"
+import LargeDeviceDisplayList from "./LargeDeviceDisplayList"
+import MobileDeviceDisplayList from "./MobileDeviceDisplayList"
 
 const ProductItemContent = ({ t, index, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources, i, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn }) => (
   <React.Fragment>
-    <MobileDeviceDisplay
+    <MobileDeviceDisplayList
       t={t}
       index={index}
       productName={productName}
@@ -23,7 +23,7 @@ const ProductItemContent = ({ t, index, productName, productIds, category, vendo
       onClickEditBtn={onClickEditBtn}
       onClickDeleteBtn={onClickDeleteBtn}
     />
-    <LargeDeviceDisplay
+    <LargeDeviceDisplayList
       t={t}
       index={index}
       productName={productName}

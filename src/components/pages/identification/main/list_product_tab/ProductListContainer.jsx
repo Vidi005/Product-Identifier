@@ -1,28 +1,30 @@
 import React from "react"
 import PaginationSection from "../navigation/PaginationSection"
 import ProductListMenu from "../navigation/ProductListMenu"
+import DetailProductItem from "./pop_up/DetailProductItem"
+import EditProductItem from "./pop_up/EditProductItem"
 import ProductItemContent from "./ProductItemContent"
 import ProductListToolbar from "./ProductListToolbar"
 
-const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn }) => (
+const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn, findProductByIdx, editProductItem, onCloseModal }) => (
   <React.Fragment>
+    <ProductListToolbar
+      t={props.t}
+      searchItem={searchItem}
+      onClickSyncBtn={onClickSyncBtn}
+      sortItems={sortItems}
+      onClickDeleteAllBtn={onClickDeleteAllBtn}
+      isSyncBtnClicked={state.isSyncBtnClicked}
+    />
     {
       state.isProductListLoading
         ? (
-          <article className="tab-product-list__container border border-green-900 dark:border-white rounded-lg p-4 bg-green-100 dark:bg-gray-700">
+          <article className="tab-product-list__container border border-green-900 dark:border-white rounded-lg m-1 p-4 bg-green-100 dark:bg-gray-700">
             <p className="w-8 h-8 aspect-square m-auto border-t-2 border-r-2 border-green-900 dark:border-white rounded-full bg-transparent animate-spin"></p>
           </article>
           )
         : (
           <React.Fragment>
-            <ProductListToolbar
-              t={props.t}
-              searchItem={searchItem}
-              onClickSyncBtn={onClickSyncBtn}
-              sortItems={sortItems}
-              onClickDeleteAllBtn={onClickDeleteAllBtn}
-              isSyncBtnClicked={state.isSyncBtnClicked}
-            />
             {
               state.getFilteredProducts.length > 0
                 ? (
@@ -63,7 +65,18 @@ const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortIt
           </React.Fragment>
           )
     }
-    <ProductListMenu/>
+    <ProductListMenu onClickEditBtn={onClickEditBtn}/>
+    <DetailProductItem
+      props={props}
+      isDetailModalOpened={state.isDetailModalOpened}
+      selectedProduct={state.getSelectedProduct}
+      onCloseDetailModal={onCloseModal} />
+    <EditProductItem
+      isEditModalOpened={state.isEditModalOpened}
+      findProductByIdx={findProductByIdx}
+      editProductItem={editProductItem}
+      onCloseEditModal={onCloseModal}
+    />
   </React.Fragment>
 )
 

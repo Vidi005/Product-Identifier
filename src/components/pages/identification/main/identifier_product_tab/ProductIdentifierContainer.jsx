@@ -32,12 +32,12 @@ const ProductIdentifierContainer = ({ props, selectedProduct }) => {
             className={({ selected }) => {
               if (index % 2 != 0) {
                 return selected
-                  ? "max-h-7 py-1 px-6 border border-white cursor-pointer bg-white/50 duration-200 rounded-r-md"
-                  : "max-h-7 py-1 px-6 border border-white cursor-pointer hover:bg-white/50 duration-200 rounded-r-md"
+                  ? "max-h-7 py-1 px-6 border border-black cursor-pointer bg-black/75 invert duration-200 rounded-r-md"
+                  : "max-h-7 py-1 px-6 border border-white cursor-pointer hover:bg-white/75 duration-200 rounded-r-md"
               } else {
                 return selected
-                  ? "max-h-7 py-1 px-6 border border-white cursor-pointer bg-white/50 duration-200 rounded-l-md"
-                  : "max-h-7 py-1 px-6 border border-white cursor-pointer hover:bg-white/50 duration-200 rounded-l-md"
+                  ? "max-h-7 py-1 px-6 border border-black cursor-pointer bg-black/75 invert duration-200 rounded-l-md"
+                  : "max-h-7 py-1 px-6 border border-white cursor-pointer hover:bg-white/75 duration-200 rounded-l-md"
               }
             }}>
           </Tab>
