@@ -3,10 +3,11 @@ import PaginationSection from "../navigation/PaginationSection"
 import ProductListMenu from "../navigation/ProductListMenu"
 import DetailProductItem from "./pop_up/DetailProductItem"
 import EditProductItem from "./pop_up/EditProductItem"
+import SyncProductItems from "./pop_up/SyncProductItems"
 import ProductItemContent from "./ProductItemContent"
 import ProductListToolbar from "./ProductListToolbar"
 
-const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn, findProductByIdx, editProductItem, onCloseModal }) => (
+const ProductListContainer = ({ props, state, changeUpdateSetting, searchItem, onClickSyncBtn, syncProductData, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn, findProductByIdx, editProductItem, onCloseModal }) => (
   <React.Fragment>
     <ProductListToolbar
       t={props.t}
@@ -66,6 +67,13 @@ const ProductListContainer = ({ props, state, searchItem, onClickSyncBtn, sortIt
           )
     }
     <ProductListMenu onClickEditBtn={onClickEditBtn}/>
+    <SyncProductItems
+      t={props.t}
+      isSyncModalOpened={state.isSyncModalOpened}
+      syncProductData={syncProductData}
+      isAutoCheckUpdate={state.isAutoCheckUpdate}
+      changeUpdateSetting={changeUpdateSetting}
+      onCloseSyncModal={onCloseModal}/>
     <DetailProductItem
       props={props}
       isDetailModalOpened={state.isDetailModalOpened}

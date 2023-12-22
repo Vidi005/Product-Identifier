@@ -2,8 +2,10 @@ import React from "react"
 
 const ProductListSync = ({ onClickSyncBtn, isSyncBtnClicked }) => isSyncBtnClicked
   ? (
-    <button className="toolbar-sync bg-orange-700 md:ml-1 p-1 md:p-2 rounded-lg" disabled>
-      <img className="max-h-7 aspect-square animate-spin" src="images/sync-icon.svg" alt="Sync" />
+    <button className="toolbar-sync md:flex items-center bg-orange-700 md:ml-1 p-1 md:p-2 rounded-lg" disabled>
+      <img className="md:hidden max-h-7 aspect-square animate-spin" src="images/sync-icon.svg" alt="Sync" />
+      <img className="hidden md:block max-h-7 aspect-square animate-spin" src="images/sync-icon.svg" alt="Sync" />
+      <p className="hidden md:block text-white text-sm">Synchronizing</p>
     </button>
     )
   : (

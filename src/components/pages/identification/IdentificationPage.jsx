@@ -13,8 +13,11 @@ class IdentificationPage extends React.Component {
     super(props)
     this.state = {
       LANGUAGE_STORAGE_KEY: 'LANGUAGE_STORAGE_KEY',
-      DISPLAY_MODE_STORAGE_KEY: 'DISPLAY_MODE_STORAGE_KEY',
+      DARK_MODE_STORAGE_KEY: 'DARK_MODE_STORAGE_KEY',
+      DATE_UPDATED_STORAGE_KEY: 'DATE_UPDATED_STORAGE_KEY',
       PRODUCT_STORAGE_KEY: 'PRODUCT_STORAGE_KEY',
+      UPDATE_SETTING_STORAGE_KEY: 'UPDATE_SETTING_STORAGE_KEY',
+      getDateUpdated: '',
       getProductList: [],
       getProductsPerPage: [],
       getFilteredProducts: [],
@@ -26,8 +29,12 @@ class IdentificationPage extends React.Component {
       itemsPerPage: 20,
       selectedLanguage: 'en',
       tagColor: '',
+      syncSelection: '',
       isDarkModeEnabled: false,
       isProductListLoading: false,
+      isSyncBtnClicked: false,
+      isSyncModalOpened: false,
+      isAutoCheckUpdate: false,
       isDetailModalOpened: false,
       isEditModalOpened: false,
       isSavedToLocalStorage: false,
@@ -47,6 +54,9 @@ class IdentificationPage extends React.Component {
       document.body.style.overflow = 'hidden'
       addEventListener('beforeunload', this.onUnloadPage)
     } else document.body.style.overflow = 'unset'
+    if (this.state.isSyncBtnClicked && !this.state.isSyncModalOpened) {
+      // checkUpdate()
+    }
   }
 
   componentWillUnmount() {
@@ -59,20 +69,21 @@ class IdentificationPage extends React.Component {
       this.checkDisplayMode()
       this.checkLanguageData()
       this.checkProductData()
+      this.checkUpdateSetting()
     } else {
       return
     }
   }
 
   checkDisplayMode () {
-    const getDisplayModeFromLocal = localStorage.getItem(this.state.DISPLAY_MODE_STORAGE_KEY)
+    const getDisplayModeFromLocal = localStorage.getItem(this.state.DARK_MODE_STORAGE_KEY)
     try {
       const parsedDisplayMode = JSON.parse(getDisplayModeFromLocal)
       if (parsedDisplayMode !== undefined) {
         this.setState({ isDarkModeEnabled: parsedDisplayMode })
       }
     } catch (error) {
-      localStorage.removeItem(this.state.DISPLAY_MODE_STORAGE_KEY)
+      localStorage.removeItem(this.state.DARK_MODE_STORAGE_KEY)
       alert(`Error: ${error.message}\n${this.props.t('reload')}`)
     }
   }
@@ -92,14 +103,29 @@ class IdentificationPage extends React.Component {
   }
 
   checkProductData () {
+    const getDateUpdatedDataFromLocal = localStorage.getItem(this.state.DATE_UPDATED_STORAGE_KEY)
     const getProductDataFromLocal = localStorage.getItem(this.state.PRODUCT_STORAGE_KEY)
     try {
+      const parsedDateUpdated = JSON.parse(getDateUpdatedDataFromLocal)
       const parsedProductData = JSON.parse(getProductDataFromLocal)
-      if (parsedProductData !== undefined) {
+      if (parsedDateUpdated !== undefined && parsedProductData !== undefined) {
         this.loadProductData()
       } else this.fetchProductList()
     } catch (error) {
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
+    }
+  }
+
+  checkUpdateSetting () {
+    const getUpdateSettingFromLocal = localStorage.getItem(this.state.UPDATE_SETTING_STORAGE_KEY)
+    try {
+      const parsedUpdateSetting = JSON.parse(getUpdateSettingFromLocal)
+      if (parsedUpdateSetting !== undefined) {
+        this.setState({ isAutoCheckUpdate: parsedUpdateSetting })
+      }
+    } catch (error) {
+      localStorage.removeItem(this.state.UPDATE_SETTING_STORAGE_KEY)
       alert(`Error: ${error.message}\n${this.props.t('reload')}`)
     }
   }
@@ -118,9 +144,15 @@ class IdentificationPage extends React.Component {
     })
   }
 
+  changeUpdateSetting = () => {
+    this.setState(prevState => ({
+      isAutoCheckUpdate: !prevState.isAutoCheckUpdate
+    }), () => this.saveUpdateSetting(this.state.isAutoCheckUpdate))
+  }
+
   saveDisplayMode = selectedDisplayMode => {
     if (isStorageExist(this.props.t('storage_availability'))) {
-      localStorage.setItem(this.state.DISPLAY_MODE_STORAGE_KEY, JSON.stringify(selectedDisplayMode))
+      localStorage.setItem(this.state.DARK_MODE_STORAGE_KEY, JSON.stringify(selectedDisplayMode))
     }
   }
 
@@ -130,19 +162,30 @@ class IdentificationPage extends React.Component {
     }
   }
 
+  saveUpdateSetting = isAutoCheckUpdate => {
+    if (isStorageExist(this.props.t('storage_availability'))) {
+      localStorage.setItem(this.state.UPDATE_SETTING_STORAGE_KEY, JSON.stringify(isAutoCheckUpdate))
+    }
+  }
+
   loadProductData() {
+    const getDateUpdatedDataFromLocal = localStorage.getItem(this.state.DATE_UPDATED_STORAGE_KEY)
     const getProductDataFromLocal = localStorage.getItem(this.state.PRODUCT_STORAGE_KEY)
     try {
+      const parsedDateUpdated = JSON.parse(getDateUpdatedDataFromLocal)
       const parsedProductData = JSON.parse(getProductDataFromLocal)
-      if (parsedProductData !== null) {
+      if (parsedDateUpdated !== null && parsedProductData !== null) {
         if (Object.keys(parsedProductData).length > 0) {
           this.setState({
+            getDateUpdated: parsedDateUpdated,
             getProductList: parsedProductData,
             getFilteredProducts: parsedProductData
           }, () => this.loadProductsPerPage())
         } else {
+          localStorage.removeItem(this.state.DATE_UPDATED_STORAGE_KEY)
           localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
           this.setState({
+            getDateUpdated: '',
             getProductList: [],
             getFilteredProducts: []
           }, () => this.loadProductsPerPage())
@@ -174,27 +217,32 @@ class IdentificationPage extends React.Component {
     }).then(response => response.json()).then(response => {
       if (Object.entries(response?.data?.product_list).length > 0) {
         this.setState({
+          getDateUpdated: response?.date_updated || new Date().toISOString(),
           getProductList: response.data.product_list,
-          isProductListLoading: false
+          isProductListLoading: false,
+          isSyncBtnClicked: false
         }, () => {
           this.sortProductList(this.state.sortBy)
           this.saveProductData()
         })
       } else {
-        this.setState({ isProductListLoading: false })
+        this.setState({ isProductListLoading: false, isSyncBtnClicked: false})
         Swal.fire(this.props.t('empty_data_alert'), '', 'warning')
       }
     }).then(() => this.loadProductData())
     .catch(error => {
       Swal.fire(this.props.t('fetch_error'), error.message, 'error')
-      this.setState({ isProductListLoading: false })
+      this.setState({ isProductListLoading: false, isSyncBtnClicked: false })
     })
   }
 
   saveProductData() {
     if (isStorageExist(this.props.t('storage_availability'))) {
+      const dateUpdatedStringData = JSON.stringify(this.state.getDateUpdated)
       const productsStringData = JSON.stringify(this.state.getProductList)
+      localStorage.removeItem(this.state.DATE_UPDATED_STORAGE_KEY)
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
+      localStorage.setItem(this.state.DATE_UPDATED_STORAGE_KEY, dateUpdatedStringData)
       localStorage.setItem(this.state.PRODUCT_STORAGE_KEY, productsStringData)
     }
   }
@@ -227,13 +275,29 @@ class IdentificationPage extends React.Component {
   }
 
   onClickSyncBtn () {
-    this.fetchProductList()
+    this.setState({ isSyncModalOpened: true })
+  }
+
+  synchronizeProductData (selection) {
+    this.setState({ isSyncBtnClicked: true, syncSelection: selection }, () => {
+      if (selection === 'Replace All') {
+        this.onClickDeleteAllBtn()
+        this.fetchProductList()
+      } else if (selection === 'Keep Old and Add New') {
+        this.fetchProductList()
+      } else {
+        // this.fetchProductList()
+      }
+    })
+    this.onCloseModalHandler()
   }
 
   onClickDeleteAllBtn () {
     if (isStorageExist(this.props.t('storage_availability'))) {
+      localStorage.removeItem(this.state.DATE_UPDATED_STORAGE_KEY)
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
       this.setState({
+        getDateUpdated: '',
         getProductList: [],
         getFilteredProducts: []
       })
@@ -375,6 +439,7 @@ class IdentificationPage extends React.Component {
   onCloseModalHandler () {
     this.setState({
       isBtnCloseClicked: true,
+      isSyncModalOpened: false,
       isDetailModalOpened: false,
       isEditModalOpened: false
     })
@@ -417,8 +482,10 @@ class IdentificationPage extends React.Component {
         <MainContainer
           props={this.props}
           state={this.state}
+          changeUpdateSetting={this.changeUpdateSetting.bind(this)}
           searchItem={this.searchHandler.bind(this)}
           onClickSyncBtn={this.onClickSyncBtn.bind(this)}
+          syncProductData={this.synchronizeProductData.bind(this)}
           sortItems={this.sortProductList.bind(this)}
           onSelectNavHandler={this.onSelectNavHandler.bind(this)}
           onClickDeleteAllBtn={this.onClickDeleteAllBtn.bind(this)}
