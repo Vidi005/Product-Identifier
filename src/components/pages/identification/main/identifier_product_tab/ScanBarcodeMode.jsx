@@ -23,6 +23,8 @@ class ScanBarcodeMode extends React.Component {
       origin: '',
       description: '',
       sources: '',
+      addedBy: '',
+      modifiedBy: '',
       isInverseModeEnabled: false,
       isModalOpened: false
     }

@@ -44,6 +44,7 @@ class IdentificationPage extends React.Component {
   }
 
   componentDidMount() {
+    this.checkWindowSize()
     this.checkLocalStorage()
     this.searchHandler('')
   }
@@ -61,6 +62,14 @@ class IdentificationPage extends React.Component {
 
   componentWillUnmount() {
     removeEventListener('beforeunload', this.onUnloadPage)
+  }
+
+  checkWindowSize () {
+    if (window.innerWidth > 768) {
+      this.setState({ itemsPerPage: 10 })
+    } else {
+      this.setState({ itemsPerPage: 20 })
+    }
   }
 
   checkLocalStorage () {
@@ -256,6 +265,14 @@ class IdentificationPage extends React.Component {
     } else Swal.fire(this.props.t('storage_title_alert'), this.props.t('storage_text_alert'), 'error')
   }
 
+  changeItemsPerPageHandler (event) {
+    event.preventDefault()
+    this.setState({ itemsPerPage: event.target.value || 20 }, () => {
+      this.onSelectNavHandler(0)
+      this.loadProductsPerPage()
+    })
+  }
+
   searchHandler (query) {
     const dataCopy = this.state.getProductList.map(productItem => ({ ...productItem }))
     this.setState({ searchQuery: query.toLowerCase() }, () => {
@@ -280,10 +297,10 @@ class IdentificationPage extends React.Component {
 
   synchronizeProductData (selection) {
     this.setState({ isSyncBtnClicked: true, syncSelection: selection }, () => {
-      if (selection === 'Replace All') {
+      if (selection === 'Update All') {
         this.onClickDeleteAllBtn()
         this.fetchProductList()
-      } else if (selection === 'Keep Old and Add New') {
+      } else if (selection === 'Partially Update') {
         this.fetchProductList()
       } else {
         // this.fetchProductList()
@@ -362,7 +379,7 @@ class IdentificationPage extends React.Component {
     } else Swal.fire({ icon: 'error', title: this.props.t('product_not_found') })
   }
 
-  editProductHandler (idx, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources) {
+  editProductHandler (idx, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources, addedBy, modifiedBy ) {
     const findSelectedProduct = this.findProductByIdx(idx)
     if (findSelectedProduct === undefined) {
       const addedProductData = this.state.getProductList
@@ -378,7 +395,9 @@ class IdentificationPage extends React.Component {
         colorTag,
         description,
         alternatives,
-        sources
+        sources,
+        addedBy,
+        modifiedBy
       })
       this.setState({ getProductList: addedProductData }, () => this.updateProductData())
     } else {
@@ -395,7 +414,9 @@ class IdentificationPage extends React.Component {
             colorTag,
             description,
             alternatives,
-            sources
+            sources,
+            addedBy,
+            modifiedBy
           }
         }
         return productItem
@@ -430,7 +451,9 @@ class IdentificationPage extends React.Component {
           color_tag: '',
           description: '',
           alternatives: '',
-          sources: ''
+          sources: '',
+          added_by: 'User',
+          modified_by: 'User'
         }
       })
     }
@@ -483,6 +506,7 @@ class IdentificationPage extends React.Component {
           props={this.props}
           state={this.state}
           changeUpdateSetting={this.changeUpdateSetting.bind(this)}
+          changeItemsPerPage={this.changeItemsPerPageHandler.bind(this)}
           searchItem={this.searchHandler.bind(this)}
           onClickSyncBtn={this.onClickSyncBtn.bind(this)}
           syncProductData={this.synchronizeProductData.bind(this)}

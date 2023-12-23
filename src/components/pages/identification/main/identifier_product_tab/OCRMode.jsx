@@ -25,6 +25,8 @@ class OCRMode extends React.Component {
       origin: '',
       description: '',
       sources: '',
+      addedBy: '',
+      modifiedBy: '',
       facingMode: 'environment',
       imgFile: null,
       filteredImgFile: null,

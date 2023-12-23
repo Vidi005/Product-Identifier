@@ -2,7 +2,7 @@ import React from "react"
 import LargeDeviceDisplayList from "./LargeDeviceDisplayList"
 import MobileDeviceDisplayList from "./MobileDeviceDisplayList"
 
-const ProductItemContent = ({ t, index, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources, i, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn }) => (
+const ProductItemContent = ({ t, index, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources, addedBy, modifiedBy, i, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn }) => (
   <React.Fragment>
     <MobileDeviceDisplayList
       t={t}
@@ -18,6 +18,8 @@ const ProductItemContent = ({ t, index, productName, productIds, category, vendo
       description={description}
       alternatives={alternatives}
       sources={sources}
+      addedBy={addedBy}
+      modifiedBy={modifiedBy}
       i={i}
       onClickDetailBtn={onClickDetailBtn}
       onClickEditBtn={onClickEditBtn}
@@ -37,6 +39,8 @@ const ProductItemContent = ({ t, index, productName, productIds, category, vendo
       description={description}
       alternatives={alternatives}
       sources={sources}
+      addedBy={addedBy}
+      modifiedBy={modifiedBy}
       i={i}
       onClickDetailBtn={onClickDetailBtn}
       onClickEditBtn={onClickEditBtn}
