@@ -32,7 +32,7 @@ const DetailProductItem = ({ props, isDetailModalOpened, selectedProduct, onClos
               <h4>X</h4>
             </button>
           </span>
-          <Dialog.Title as="h3" className="text-center text-green-900 dark:text-white">Detail Product</Dialog.Title>
+          <Dialog.Title as="h3" className="text-center text-green-900 dark:text-white">{props.t('detail_product')}</Dialog.Title>
           <MobileDisplayDetail t={props.t} selectedProduct={selectedProduct} />
           <LargeDisplayDetail t={props.t} selectedProduct={selectedProduct} />
         </Dialog.Panel>

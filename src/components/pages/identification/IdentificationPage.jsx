@@ -23,7 +23,7 @@ class IdentificationPage extends React.Component {
       getFilteredProducts: [],
       getSelectedProduct: '',
       searchQuery: '',
-      sortBy: this.props.t('sort_products'),
+      sortBy: this.props.t('sort_products.0'),
       currentPage: 1,
       lastPage: 1,
       itemsPerPage: 20,
@@ -47,6 +47,7 @@ class IdentificationPage extends React.Component {
     this.checkWindowSize()
     this.checkLocalStorage()
     this.searchHandler('')
+    this.sortProductList(this.state.sortBy)
   }
   
   componentDidUpdate() {
@@ -344,9 +345,15 @@ class IdentificationPage extends React.Component {
     } else if (sort === this.props.t('sort_products.4')) {
       const sortProductsByTag = dataCopy.sort((a, b) => a.name_tag.toLowerCase().localeCompare(b.name_tag.toLowerCase()))
       this.setState({ getFilteredProducts: sortProductsByTag }, () => this.loadProductsPerPage())
-    } else {
+    } else if (sort === this.props.t('sort_products.5')) {
       const sortProductsByTagDesc = dataCopy.sort((a, b) => (b.name_tag > a.name_tag) ? 1 : -1)
       this.setState({ getFilteredProducts: sortProductsByTagDesc }, () => this.loadProductsPerPage())
+    } else if (sort === this.props.t('sort_products.6')) {
+      const sortProductsByVendor = dataCopy.sort((a, b) => a.vendor.toLowerCase().localeCompare(b.vendor.toLowerCase()))
+      this.setState({ getFilteredProducts: sortProductsByVendor }, () => this.loadProductsPerPage())
+    } else {
+      const sortProductsByVendorDesc = dataCopy.sort((a, b) => (b.vendor > a.vendor) ? 1 : -1)
+      this.setState({ getFilteredProducts: sortProductsByVendorDesc }, () => this.loadProductsPerPage())
     }
     this.onSelectNavHandler(0)
     this.setState({ sortBy: sort })

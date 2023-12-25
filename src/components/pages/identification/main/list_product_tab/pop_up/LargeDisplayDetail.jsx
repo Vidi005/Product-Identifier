@@ -21,6 +21,7 @@ const LargeDisplayDetail = ({ t, selectedProduct }) => {
                 ? <td className="product-title font-bold">{t(`product_vars.${i + 1}`)}</td>
                 : <td className="product-title font-bold">{t(`product_vars.${i}`)}</td>
             }
+            <td>:</td>
             {
               key === 'name_tag' && selectedProduct.color_tag !== ''
                 ? <td className="product-content pl-1 text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{val === '' ? '-' : val}</td>
