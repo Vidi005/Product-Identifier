@@ -4,7 +4,7 @@ import IdentifierBottomBar from "./IdentifierBottomBar"
 import OCRMode from "./OCRMode"
 import ScanBarcodeMode from "./ScanBarcodeMode"
 
-const ProductIdentifierContainer = ({ props, selectedProduct }) => {
+const ProductIdentifierContainer = ({ props, state }) => {
   const identifier = {
     imgSrc: [
     'images/ocr-mode-icon.svg',
@@ -16,10 +16,10 @@ const ProductIdentifierContainer = ({ props, selectedProduct }) => {
     <Tab.Group as={"article"} className={"tab-product-identifier__container relative flex flex-col justify-between h-full bg-black/95 font-sans text-white text-center animate__animated animate__fadeIn"}>
       <Tab.Panels className="grow">
         <Tab.Panel className="product-identifier__ocr relative h-full animated__animated animated__fadeIn">
-          <OCRMode props={props} selectedProduct={selectedProduct} />
+          <OCRMode props={props} getProductList={state.getProductList} />
         </Tab.Panel>
         <Tab.Panel className="product-identifier__barcode h-full animate__animated animate__fadeIn">
-          <ScanBarcodeMode props={props} selectedProduct={selectedProduct}/>
+          <ScanBarcodeMode props={props} selectedProduct={state.selectedProduct}/>
         </Tab.Panel>
       </Tab.Panels>
       <Tab.List className="identifier__bottom-navigation flex items-center justify-center w-full bg-black/95 p-2">

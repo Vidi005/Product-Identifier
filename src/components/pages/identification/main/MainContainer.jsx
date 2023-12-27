@@ -44,7 +44,7 @@ const MainContainer = ({ props, state, changeItemsPerPage, searchItem, changeUpd
           />
         </Tab.Panel>
         <Tab.Panel as={Fragment}>
-          <ProductIdentifierContainer props={props} selectedProduct={state.selected}/>
+          <ProductIdentifierContainer props={props} state={state} selectedProduct={state.getSelectedProduct} onCloseModal={onCloseModal}/>
         </Tab.Panel>
       </Tab.Panels>
     </Tab.Group>
