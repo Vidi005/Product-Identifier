@@ -18,8 +18,8 @@ const ProductIdentifierContainer = ({ props, state }) => {
         <Tab.Panel className="product-identifier__ocr relative h-full animated__animated animated__fadeIn">
           <OCRMode props={props} getProductList={state.getProductList} />
         </Tab.Panel>
-        <Tab.Panel className="product-identifier__barcode h-full animate__animated animate__fadeIn">
-          <ScanBarcodeMode props={props} selectedProduct={state.selectedProduct}/>
+        <Tab.Panel className="product-identifier__barcode w-full h-full animate__animated animate__fadeIn">
+          <ScanBarcodeMode props={props} getProductList={state.getProductList}/>
         </Tab.Panel>
       </Tab.Panels>
       <Tab.List className="identifier__bottom-navigation flex items-center justify-center w-full bg-black/95 p-2">

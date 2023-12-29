@@ -5,6 +5,7 @@ import Swal from "sweetalert2"
 import { convertDataURLtoFile } from "../../../../../utils/data"
 import CameraSwitcher from "./CameraSwitcher"
 import ImagePicker from "./ImagePicker"
+import ScannedBarcode from "./pop_up/ScannedBarcode"
 
 class ScanBarcodeMode extends React.Component {
   constructor(props) {
@@ -13,18 +14,8 @@ class ScanBarcodeMode extends React.Component {
     this.state = {
       facingMode: 'environment',
       aspectRatio: 1,
-      scannedResult: '',
-      productName: '',
-      productID: [],
-      category: '',
-      vendor: '',
-      tag: '',
-      color: '',
-      origin: '',
-      description: '',
-      sources: '',
-      addedBy: '',
-      modifiedBy: '',
+      getScannedProduct: {},
+      getScannedResult: '',
       isInverseModeEnabled: false,
       isModalOpened: false
     }
@@ -206,27 +197,34 @@ class ScanBarcodeMode extends React.Component {
 
   onScanSuccess(decodedText) {
     if (this.barcodeReader.isScanning) {
-      this.setState({ scannedResult: decodedText }, () => {
-        if (this.state.scannedResult !== 0 && this.state.scannedResult !== '') {
+      this.setState({ getScannedResult: decodedText }, () => {
+        if (this.state.getScannedResult !== 0 && this.state.getScannedResult !== '') {
           this.barcodeReader.pause()
-          Swal.fire({
-            icon: 'success',
-            title:'Scan Result',
-            text: this.state.scannedResult
-          }).then(() => this.barcodeReader.resume())
+          this.findScannedBarcode(decodedText)
         }
       })
     } else {
-      this.setState({ scannedResult: decodedText }, () => {
-        if (this.state.scannedResult !== 0 && this.state.scannedResult !== '') {
-          Swal.fire({
-            icon: 'success',
-            title:'Scan Result',
-            text: this.state.scannedResult
-          }).then(() => this.initScanner(this.barcodeReader, this.state.aspectRatio))
+      this.setState({ getScannedResult: decodedText }, () => {
+        if (this.state.getScannedResult !== 0 && this.state.getScannedResult !== '') {
+          this.findScannedBarcode(decodedText)
         }
       })
     }
+  }
+
+  findScannedBarcode(scannedBarcode) {
+    const dataCopy = [...this.props.getProductList]
+    const foundProduct = dataCopy.find(productItem => productItem.product_id && productItem.product_id.toString().includes(scannedBarcode))
+    if (foundProduct !== undefined) {
+      this.setState({ getScannedProduct: foundProduct, getScannedResult: '', isModalOpened: true })
+    } else this.setState({ getScannedProduct: {}, isModalOpened: true })
+  }
+
+  onCloseScanResultModal() {
+    this.setState({ isModalOpened: false }, () => {
+      if (this.barcodeReader.isScanning) setTimeout(() => this.barcodeReader.resume(), 500)
+      else setTimeout(() => this.initScanner(this.barcodeReader, this.state.aspectRatio), 500)
+    })
   }
   
   onClearScanner() {
@@ -258,6 +256,13 @@ class ScanBarcodeMode extends React.Component {
           }
           <CameraSwitcher switchCamera={this.switchCamera.bind(this)}/>
         </div>
+        <ScannedBarcode
+          props={this.props}
+          isScanResultModalOpened={this.state.isModalOpened}
+          scannedProduct={this.state.getScannedProduct}
+          scannedResult={this.state.getScannedResult}
+          onCloseScanResultModal={this.onCloseScanResultModal.bind(this)}
+        />
       </div>
     )
   }

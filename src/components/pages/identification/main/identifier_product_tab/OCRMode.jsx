@@ -18,17 +18,6 @@ class OCRMode extends React.Component {
     this.stream = null
     this.state = {
       downloadingProgress: 0,
-      productName: '',
-      productID: '',
-      category: '',
-      vendor: '',
-      tag: '',
-      color: '',
-      origin: '',
-      description: '',
-      sources: '',
-      addedBy: '',
-      modifiedBy: '',
       facingMode: 'environment',
       imgFile: null,
       filteredImgFile: null,
@@ -417,6 +406,7 @@ class OCRMode extends React.Component {
         this.setState({ getRecognizedVendor: productItem })
         break
       }
+      
     }
   }
 
