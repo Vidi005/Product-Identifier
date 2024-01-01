@@ -5,7 +5,7 @@ import en from "../../../../locales/en.json"
 import ProductIdentifierContainer from "./identifier_product_tab/ProductIdentifierContainer"
 import ProductListContainer from "./list_product_tab/ProductListContainer"
 
-const MainContainer = ({ props, state, changeItemsPerPage, searchItem, changeUpdateSetting, onClickSyncBtn, syncProductData, sortItems, onSelectNavHandler, onClickDeleteAllBtn, onClickDetailBtn, onClickEditBtn, onClickDeleteBtn, findProductByIdx, editProductItem, onCloseModal }) => (
+const MainContainer = ({ props, state, changeItemsPerPage, searchItem, changeUpdateSetting, onClickSyncBtn, syncProductData, sortItems, onSelectNavHandler, onClickDetailBtn, findProductByIdx, onCloseModal }) => (
   <main className="identifier-app__main grow lg:px-20">
     <Tab.Group as={"section"} className="tab-group h-full md:p-1 bg-green-50 dark:bg-black rounded-lg shadow-lg">
       <Tab.List className="grid grid-cols-2 gap-2 sticky top-0 m-1 md:p-0 p-1 font-medium text-base bg-green-900/20 dark:bg-white/20 rounded-xl shadow-inner">
@@ -33,13 +33,9 @@ const MainContainer = ({ props, state, changeItemsPerPage, searchItem, changeUpd
             onClickSyncBtn={onClickSyncBtn}
             syncProductData={syncProductData}
             sortItems={sortItems}
-            onSelectNavHandler={onSelectNavHandler} 
-            onClickDeleteAllBtn={onClickDeleteAllBtn}
+            onSelectNavHandler={onSelectNavHandler}
             onClickDetailBtn={onClickDetailBtn}
-            onClickEditBtn={onClickEditBtn}
-            onClickDeleteBtn={onClickDeleteBtn}
             findProductByIdx={findProductByIdx}
-            editProductItem={editProductItem}
             onCloseModal={onCloseModal}
           />
         </Tab.Panel>

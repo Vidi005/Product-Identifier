@@ -4,9 +4,9 @@ import { withTranslation } from "react-i18next"
 import en from "../../../../../locales/en.json"
 
 const FilterMenu = ({ t, filterImage }) => (
-  <Menu as={"menu"} className="absolute h-8 w-8 top-2 left-2">
+  <Menu as={"menu"} className="absolute h-9 w-9 top-2 left-2">
     <Menu.Button className="inline-flex items-center justify-center w-full h-full border border-white p-1 hover:bg-black/50 bg-black/25 backdrop-blur-sm duration-200 rounded-md shadow-inner">
-      <img className="h-full object-contain" src="images/change-color-icon.svg" alt="Change Color" />
+      <img className="h-full object-contain object-center" src="images/change-color-icon.svg" alt="Change Color" />
     </Menu.Button>
     <Transition
       as={Fragment}

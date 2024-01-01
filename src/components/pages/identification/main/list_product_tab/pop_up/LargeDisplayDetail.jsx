@@ -11,6 +11,16 @@ const LargeDisplayDetail = ({ t, selectedProduct }) => {
     }
     return acc
   }, {})
+  const renderClickableText = (text) => {
+    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+    return text.split(urlRegex).map((part, i) => {
+      if (i % 2 === 1) {
+        return <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+      } else {
+        return <React.Fragment key={i}>{part}</React.Fragment>
+      }
+    })
+  }
   return (
     <table className="product-detail hidden md:table table-auto m-4 grow overflow-y-auto">
       <tbody>

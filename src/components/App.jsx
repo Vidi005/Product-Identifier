@@ -5,6 +5,7 @@ import NoPage from "./pages/empty/NoPage"
 import LandingPage from "./pages/home/LandingPage"
 import IdentificationPage from "./pages/identification/IdentificationPage"
 import i18n from "../utils/localization"
+import AccountPage from "./pages/account/AccountPage"
 
 const App = () => (
   <React.Fragment>
@@ -15,6 +16,8 @@ const App = () => (
     <Routes>
       <Route path="/" element={<LandingPage />}/>
       <Route path="/identify" element={<IdentificationPage />}/>
+      <Route path="/account" element={<AccountPage />}/>
+      {/* <Route path="/account/settings" element={<Profile />}/> */}
       <Route path="*" element={<NoPage />}/>
     </Routes>
   </React.Fragment>

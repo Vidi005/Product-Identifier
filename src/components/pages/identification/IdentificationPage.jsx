@@ -19,6 +19,7 @@ class IdentificationPage extends React.Component {
       UPDATE_SETTING_STORAGE_KEY: 'UPDATE_SETTING_STORAGE_KEY',
       getDateUpdated: '',
       getProductList: [],
+      getTempProductList: [],
       getProductsPerPage: [],
       getFilteredProducts: [],
       getSelectedProduct: '',
@@ -31,12 +32,12 @@ class IdentificationPage extends React.Component {
       tagColor: '',
       syncSelection: '',
       isDarkModeEnabled: false,
+      isCheckingForUpdate: false,
       isProductListLoading: false,
       isSyncBtnClicked: false,
       isSyncModalOpened: false,
       isAutoCheckUpdate: false,
       isDetailModalOpened: false,
-      isEditModalOpened: false,
       isSavedToLocalStorage: false,
       isDetailBtnClicked: false,
       isBtnCloseClicked: false
@@ -47,30 +48,15 @@ class IdentificationPage extends React.Component {
     this.checkWindowSize()
     this.checkLocalStorage()
     this.searchHandler('')
-    this.sortProductList(this.state.sortBy)
   }
   
   componentDidUpdate() {
     document.body.classList.toggle('dark', this.state.isDarkModeEnabled)
-    if (this.state.isEditModalOpened) {
-      document.body.style.overflow = 'hidden'
-      addEventListener('beforeunload', this.onUnloadPage)
-    } else document.body.style.overflow = 'unset'
-    if (this.state.isSyncBtnClicked && !this.state.isSyncModalOpened) {
-      // checkUpdate()
-    }
-  }
-
-  componentWillUnmount() {
-    removeEventListener('beforeunload', this.onUnloadPage)
   }
 
   checkWindowSize () {
-    if (window.innerWidth > 768) {
-      this.setState({ itemsPerPage: 10 })
-    } else {
-      this.setState({ itemsPerPage: 20 })
-    }
+    if (window.innerWidth > 768) this.setState({ itemsPerPage: 10 })
+    else this.setState({ itemsPerPage: 20 })
   }
 
   checkLocalStorage () {
@@ -78,8 +64,8 @@ class IdentificationPage extends React.Component {
     if (isStorageExist('')) {
       this.checkDisplayMode()
       this.checkLanguageData()
-      this.checkProductData()
       this.checkUpdateSetting()
+      this.checkProductData()
     } else {
       return
     }
@@ -112,6 +98,19 @@ class IdentificationPage extends React.Component {
     }
   }
 
+  checkUpdateSetting () {
+    const getUpdateSettingFromLocal = localStorage.getItem(this.state.UPDATE_SETTING_STORAGE_KEY)
+    try {
+      const parsedUpdateSetting = JSON.parse(getUpdateSettingFromLocal)
+      if (parsedUpdateSetting !== undefined) {
+        this.setState({ isAutoCheckUpdate: parsedUpdateSetting }, () => this.checkProductData())
+      }
+    } catch (error) {
+      localStorage.removeItem(this.state.UPDATE_SETTING_STORAGE_KEY)
+      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
+    }
+  }
+
   checkProductData () {
     const getDateUpdatedDataFromLocal = localStorage.getItem(this.state.DATE_UPDATED_STORAGE_KEY)
     const getProductDataFromLocal = localStorage.getItem(this.state.PRODUCT_STORAGE_KEY)
@@ -120,22 +119,10 @@ class IdentificationPage extends React.Component {
       const parsedProductData = JSON.parse(getProductDataFromLocal)
       if (parsedDateUpdated !== undefined && parsedProductData !== undefined) {
         this.loadProductData()
+        if (this.state.isAutoCheckUpdate) this.checkProductUpdate(true)
       } else this.fetchProductList()
     } catch (error) {
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
-      alert(`Error: ${error.message}\n${this.props.t('reload')}`)
-    }
-  }
-
-  checkUpdateSetting () {
-    const getUpdateSettingFromLocal = localStorage.getItem(this.state.UPDATE_SETTING_STORAGE_KEY)
-    try {
-      const parsedUpdateSetting = JSON.parse(getUpdateSettingFromLocal)
-      if (parsedUpdateSetting !== undefined) {
-        this.setState({ isAutoCheckUpdate: parsedUpdateSetting })
-      }
-    } catch (error) {
-      localStorage.removeItem(this.state.UPDATE_SETTING_STORAGE_KEY)
       alert(`Error: ${error.message}\n${this.props.t('reload')}`)
     }
   }
@@ -209,13 +196,74 @@ class IdentificationPage extends React.Component {
   }
 
   loadProductsPerPage () {
-    const lastPage = parseInt(this.state.getFilteredProducts.length / this.state.itemsPerPage)
+    const lastPage = parseInt((this.state.getFilteredProducts.length - 1) / this.state.itemsPerPage)
     this.setState({
       getProductsPerPage: this.state.getFilteredProducts.slice(
         (this.state.currentPage - 1) * this.state.itemsPerPage,
         this.state.currentPage * this.state.itemsPerPage),
       lastPage: lastPage + 1
     })
+  }
+
+  checkProductUpdate (truthState) {
+    const productsUrl = import.meta.env.VITE_PRODUCT_LIST_URL
+    this.setState({ isCheckingForUpdate: truthState })
+    fetch(productsUrl, {
+      mode: 'cors',
+      signal: timeOut(20).signal
+    }).then(response => response.json()).then(response => {
+      if (response?.date_updated !== undefined && Object.entries(response?.data?.product_list).length > 0) {
+        if (Date.parse(response.date_updated) > Date.parse(this.state.getDateUpdated)) {
+          Swal.fire({
+            title: this.props.t('update_available_title_alert'),
+            text: this.props.t('update_available_text_alert'),
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: 'green',
+            cancelButtonColor: 'red',
+            confirmButtonText: this.props.t('question_tag_confirmation.0'),
+            cancelButtonText: this.props.t('question_tag_confirmation.1'),
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.setState({
+                getDateUpdated: response.date_updated,
+                getTempProductList: response.data.product_list,
+                isCheckingForUpdate: false,
+                isSyncModalOpened: truthState
+              })
+            } else this.setState({ isCheckingForUpdate: false })
+          })
+        } else {
+          this.setState({ isCheckingForUpdate: false })
+        }        
+      } else {
+        this.setState({ isCheckingForUpdate: false })
+        Swal.fire(this.props.t('empty_data_alert'), '', 'warning')
+      }
+    }).catch(error => {
+      let errorMsg = ''
+      if (error.message.includes('The user aborted a request.')) errorMsg = 'Request Timeout!'
+      else errorMsg = error.message
+      Swal.fire(this.props.t('check_update_error'), errorMsg, 'error')
+      this.setState({ isCheckingForUpdate: false })
+    })
+  }
+
+  mergeProductList(newData) {
+    const mergedList = []
+    const oldData = this.state.getProductList
+    const combinedProductList = [...oldData, ...newData]
+    const indexMap = new Map()
+    combinedProductList.forEach(productItem => {
+      const { index } = productItem
+      if (!indexMap.has(index)) {
+        indexMap.set(index, productItem)        
+      }
+    })
+    indexMap.forEach(productItem => {
+      mergedList.push(productItem)
+    })
+    return mergedList
   }
 
   fetchProductList() {
@@ -241,7 +289,10 @@ class IdentificationPage extends React.Component {
       }
     }).then(() => this.loadProductData())
     .catch(error => {
-      Swal.fire(this.props.t('fetch_error'), error.message, 'error')
+      let errorMsg = ''
+      if (error.message.includes('The user aborted a request.')) errorMsg = 'Request Timeout!'
+      else errorMsg = error.message
+      Swal.fire(this.props.t('fetch_error'), errorMsg, 'error')
       this.setState({ isProductListLoading: false, isSyncBtnClicked: false })
     })
   }
@@ -255,15 +306,6 @@ class IdentificationPage extends React.Component {
       localStorage.setItem(this.state.DATE_UPDATED_STORAGE_KEY, dateUpdatedStringData)
       localStorage.setItem(this.state.PRODUCT_STORAGE_KEY, productsStringData)
     }
-  }
-
-  updateProductData() {
-    if (isStorageExist(this.props.t('storage_availability'))) {
-      const productData = this.state.getProductList
-      localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
-      localStorage.setItem(this.state.PRODUCT_STORAGE_KEY, productData)
-      this.sortProductList(this.props.t('sort_products.3'))
-    } else Swal.fire(this.props.t('storage_title_alert'), this.props.t('storage_text_alert'), 'error')
   }
 
   changeItemsPerPageHandler (event) {
@@ -299,12 +341,35 @@ class IdentificationPage extends React.Component {
   synchronizeProductData (selection) {
     this.setState({ isSyncBtnClicked: true, syncSelection: selection }, () => {
       if (selection === 'Update All') {
-        this.onClickDeleteAllBtn()
-        this.fetchProductList()
+        if (this.state.getTempProductList.length > 0) {
+          this.setState({ getProductList: this.state.getTempProductList }, () => {
+            this.sortProductList(this.state.sortBy)
+            this.saveProductData()
+            this.setState({ getTempProductList: [], isSyncBtnClicked: false }, () => this.loadProductData())
+          })
+        } else {
+          this.onClickDeleteAllBtn()
+          this.fetchProductList()
+        }
       } else if (selection === 'Partially Update') {
-        this.fetchProductList()
+        if (this.state.getTempProductList.length > 0) {
+          const mergedProductList = this.mergeProductList(this.state.getTempProductList)
+          this.setState({ getProductList: mergedProductList }, () => {
+            this.sortProductList(this.state.sortBy)
+            this.saveProductData()
+            this.setState({ getTempProductList: [], isSyncBtnClicked: false }, () => this.loadProductData())
+          })
+        } else {
+          // this.checkProductUpdate(false)
+          const mergedProductList = this.mergeProductList(this.state.getTempProductList)
+          this.setState({ getProductList: mergedProductList }, () => {
+            this.sortProductList(this.state.sortBy)
+            this.saveProductData()
+            this.setState({ getTempProductList: [], isSyncBtnClicked: false }, () => this.loadProductData())
+          })
+        }
       } else {
-        // this.fetchProductList()
+        return
       }
     })
     this.onCloseModalHandler()
@@ -386,120 +451,19 @@ class IdentificationPage extends React.Component {
     } else Swal.fire({ icon: 'error', title: this.props.t('product_not_found') })
   }
 
-  editProductHandler (idx, productName, productIds, category, vendor, origin, dateCreated, nameTag, colorTag, description, alternatives, sources, addedBy, modifiedBy ) {
-    const findSelectedProduct = this.findProductByIdx(idx)
-    if (findSelectedProduct === undefined) {
-      const addedProductData = this.state.getProductList
-      addedProductData.unshift({
-        idx,
-        productName,
-        productIds,
-        category,
-        vendor,
-        origin,
-        dateCreated,
-        nameTag,
-        colorTag,
-        description,
-        alternatives,
-        sources,
-        addedBy,
-        modifiedBy
-      })
-      this.setState({ getProductList: addedProductData }, () => this.updateProductData())
-    } else {
-      const editedProductData = this.state.getProductList.map(productItem => {
-        if (productItem.index === idx) {
-          return {
-            ...productItem,
-            productName,
-            productIds,
-            category,
-            vendor,
-            origin,
-            nameTag,
-            colorTag,
-            description,
-            alternatives,
-            sources,
-            addedBy,
-            modifiedBy
-          }
-        }
-        return productItem
-      })
-      this.setState({ getProductList: editedProductData, getFilteredProducts: editedProductData }, () => {
-        this.updateProductData()
-      })
-    }
-  }
-
-  onClickEditBtn (idx) {
-    const findOpenedProduct = this.findProductByIdx(idx)
-    if (findOpenedProduct !== undefined) {
-      this.setState({
-        isBtnCloseClicked: false,
-        getSelectedProduct: findOpenedProduct,
-        isEditModalOpened: true
-      })
-    } else {
-      this.setState({
-        isBtnCloseClicked: false,
-        isEditModalOpened: true,
-        getSelectedProduct: {
-          index: +new Date(),
-          product_name: '',
-          product_ids: '',
-          category: '',
-          vendor: '',
-          origin: '',
-          date_created: '',
-          name_tag: '',
-          color_tag: '',
-          description: '',
-          alternatives: '',
-          sources: '',
-          added_by: 'User',
-          modified_by: 'User'
-        }
-      })
-    }
-  }
-
   onCloseModalHandler () {
     this.setState({
       isBtnCloseClicked: true,
       isSyncModalOpened: false,
-      isDetailModalOpened: false,
-      isEditModalOpened: false
+      isDetailModalOpened: false
     })
-  }
-
-  onClickDeleteBtn (idx) {
-    if (this.findProductByIdx(idx) !== undefined) {
-      const remainingProducts = this.state.getProductList.filter(productData => productData.index !== parseInt(idx))
-      this.setState({
-        getProductList: remainingProducts,
-        getFilteredProducts: remainingProducts
-      }, () => {
-        this.sortProductList(this.state.sortBy)
-        this.saveProductData()
-      })
-    } else {
-      Swal.fire(this.props.t('delete_title_alert.1'), this.props.t('delete_text_alert.1'), 'error')
-    }
-  }
-
-  onUnloadPage = event => {
-    event.preventDefault()
-    event.returnValue = this.props.t('reload_page_prompt')
   }
 
   render() {
     return (
       <div className="identification-page h-screen flex flex-col dark:bg-black overflow-y-auto">
         <Helmet>
-          <title>Identify Products</title>
+          <title>{this.props.t('identify_products')}</title>
           <meta name="description" content="Identify Products by QR Code, Barcode, Image, or Text Input."/>
           <link rel="canonical" href="https://product-identifier.vercel.app/identify"/>
         </Helmet>
@@ -519,12 +483,8 @@ class IdentificationPage extends React.Component {
           syncProductData={this.synchronizeProductData.bind(this)}
           sortItems={this.sortProductList.bind(this)}
           onSelectNavHandler={this.onSelectNavHandler.bind(this)}
-          onClickDeleteAllBtn={this.onClickDeleteAllBtn.bind(this)}
           onClickDetailBtn={this.onClickDetailBtn.bind(this)}
-          onClickEditBtn={this.onClickEditBtn.bind(this)}
-          onClickDeleteBtn={this.onClickDeleteBtn.bind(this)}
           findProductByIdx={this.findProductByIdx.bind(this)}
-          editProductItem={this.editProductHandler.bind(this)}
           onCloseModal={this.onCloseModalHandler.bind(this)}
         />
         <FooterContainer/>

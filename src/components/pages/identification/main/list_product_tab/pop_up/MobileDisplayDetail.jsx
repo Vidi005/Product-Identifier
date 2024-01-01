@@ -13,6 +13,16 @@ const MobileDisplayDetail = ({ t, selectedProduct }) => {
     }
     return acc
   }, {})
+  const renderClickableText = (text) => {
+    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+    return text.split(urlRegex).map((part, i) => {
+      if (i % 2 === 1) {
+        return <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+      } else {
+        return <React.Fragment key={i}>{part}</React.Fragment>
+      }
+    })
+  }
   return (
     <span className="product-detail md:hidden grow overflow-y-auto">
       {Object.entries(detailProductVars).map(([key, val], i) => (
@@ -27,6 +37,16 @@ const MobileDisplayDetail = ({ t, selectedProduct }) => {
               ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{val === '' ? '-' : val}</p>
               : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
           }
+          {/* {
+            key === 'description' && selectedProduct.description !== ''
+              ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{renderClickableText(val)}</p>
+              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
+          }
+          {
+            key === 'sources' && selectedProduct.sources !== ''
+              ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{renderClickableText(val)}</p>
+              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
+          } */}
         </React.Fragment>
       ))}
     </span>
