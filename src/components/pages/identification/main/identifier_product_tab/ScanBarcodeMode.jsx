@@ -129,6 +129,7 @@ class ScanBarcodeMode extends React.Component {
       const parentWidth = parentElement.clientWidth
       const parentHeight = parentElement.clientHeight
       const img = new Image()
+      img.crossOrigin = 'anonymous'
       img.onload = () => {
         const aspectRatio = img.width / img.height
         let newWidth = parentWidth

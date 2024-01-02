@@ -66,8 +66,6 @@
     "confirmation_placeholder": "Enter the security code...",
     "confirmation_text": "OK",
     "detail_product": "Detail Product",
-    "downloading_models": "Downloading Models...",
-    "download_error": "Downloading models failed!",
     "scanner_state_error": ["An error occurred:", "Please reload the page.", "Failed to clear html5QrcodeScanner."],
     "scanner_text_error": ["No barcode found in the image.", "Error reading barcode from image."],
     "device_orientation_alert": "Camera works well in portrait orientation.",

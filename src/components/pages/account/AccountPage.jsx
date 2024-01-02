@@ -477,12 +477,12 @@ class AccountPage extends React.Component {
             ? <Helmet>
                 <title>{this.props.t('product_data')}</title>
                 <meta name="description" content="List of Product Data" />
-                <link rel="canonical" href="https://product-identifier.vercel.app/account" />
+                <link rel="canonical" href="https://product-identifier.pages.dev/account" />
               </Helmet>
             : <Helmet>
                 <title>{this.props.t('sign_in')}</title>
                 <meta name="description" content="Login to Manage Product Data" />
-                <link rel="canonical" href="https://product-identifier.vercel.app/account" />
+                <link rel="canonical" href="https://product-identifier.pages.dev/account" />
               </Helmet> 
         }
         <HeaderContainer

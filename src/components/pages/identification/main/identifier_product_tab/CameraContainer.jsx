@@ -34,7 +34,7 @@ const CameraContainer = ({ props, cameraRef, canvasRef, containerRef, previewRef
             ))}
           </div>
           <FilterMenu props={props.t} filterImage={filterImage}/>
-          <button className="w-9 h-9 absolute top-2 right-2 p-1 border border-white hover:bg-black/50 bg-black/25 backdrop-blur-sm rounded-md shadow-inner" onClick={() => discardPreview()} aria-label="Remove preview">
+          <button className="w-9 h-9 absolute top-1 right-1 p-1 border border-white hover:bg-black/50 bg-black/25 backdrop-blur-sm rounded-md shadow-inner" onClick={() => discardPreview()} aria-label="Remove preview">
             <img className="w-full object-contain object-center" src="images/delete-icon.svg" alt="Remove preview" />
           </button>
         </div>

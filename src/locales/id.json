@@ -66,8 +66,6 @@
     "confirmation_placeholder": "Masukkan kode keamanan...",
     "confirmation_text": "Oke",
     "detail_product": "Detail Produk",
-    "downloading_models": "Mengunduh Model...",
-    "download_error": "Gagal mendownload model!",
     "scanner_state_error": ["Terjadi kesalahan:", "Silakan muat ulang halaman ini.", "Gagal membersihkan html5QrcodeScanner."],
     "scanner_text_error": ["Tidak ada barcode yang ditemukan dalam gambar.", "Kesalahan membaca barcode dari gambar."],
     "device_orientation_alert": "Kamera dapat berfungsi dengan optimal pada poisisi portrait.",

@@ -475,7 +475,7 @@ class IdentificationPage extends React.Component {
         <Helmet>
           <title>{this.props.t('identify_products')}</title>
           <meta name="description" content="Identify Products by QR Code, Barcode, Image, or Text Input."/>
-          <link rel="canonical" href="https://product-identifier.vercel.app/identify"/>
+          <link rel="canonical" href="https://product-identifier.pages.dev/identify"/>
         </Helmet>
         <HeaderContainer
           props={this.props}

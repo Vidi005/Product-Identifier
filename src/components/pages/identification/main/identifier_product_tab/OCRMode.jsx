@@ -169,6 +169,7 @@ class OCRMode extends React.Component {
         const previewWidth = previewContainer.clientWidth
         const previewHeight = previewContainer.clientHeight
         const img = new Image()
+        img.crossOrigin = 'anonymous'
         img.onload = () => {
           const aspectRatio = img.width / img.height
           let newWidth = previewWidth
