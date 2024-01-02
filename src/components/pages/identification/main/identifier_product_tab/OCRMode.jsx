@@ -17,7 +17,6 @@ class OCRMode extends React.Component {
     this.previewRef = React.createRef()
     this.stream = null
     this.state = {
-      downloadingProgress: 0,
       facingMode: 'environment',
       imgFile: null,
       filteredImgFile: null,
@@ -26,7 +25,6 @@ class OCRMode extends React.Component {
       getRecognizedText: '',
       boundingBoxes: [],
       isCameraPermissionGranted: false,
-      isDownloading: true,
       isBtnCaptureClicked: false,
       isRecognizing: false,
       isModalOpened: false,
@@ -38,7 +36,6 @@ class OCRMode extends React.Component {
     if (innerWidth > innerHeight) {
       alert(this.props.t('device_orientation_alert'))
     }
-    this.downloadAndCacheLangFiles()
     this.setUpCamera()
   }
 
@@ -50,51 +47,6 @@ class OCRMode extends React.Component {
 
   componentWillUnmount() {
     this.stopCamera()
-  }
-
-  async downloadAndCacheLangFiles() {
-    const langPath = 'models/'
-    const trainedDataFiles = ['eng.traineddata', 'ind.traineddata', 'ara.traineddata']
-    const cacheName = 'langFiles'
-    const cache = await caches.open(cacheName)
-    const cachedFiles = await cache.match('dummyFile')
-    if (cachedFiles) {
-      this.setState({ isDownloading: false })
-      return
-    }
-    try {
-      let progress = 0
-      const downloadPromises = trainedDataFiles.map(async (file) => {
-        const response = await fetch(`${langPath}${file}`, { mode: 'cors' }).catch(error => {
-          Swal.fire({
-            icon: 'error',
-            title: this.props.t('download_error'),
-            text: error.message
-          }).then(() => this.setState({ isDownloading: false }))
-        })
-        const responseBody = await response.blob()
-        const headers = new Headers(response.headers)
-        const status = response.status
-        const statusText = response.statusText
-        const clonedResponse = new Response(responseBody, {
-          headers, status, statusText
-        })
-        await cache.put(file, clonedResponse)
-        progress += 100 / trainedDataFiles.length
-        this.setState({ downloadingProgress: progress })
-      })
-      await Promise.all(downloadPromises)
-      await cache.put('dummyFile', new Response('Dummy content'))
-      this.setState({ isDownloading: false })
-      return cache
-    } catch (error) {
-      cache.delete(cacheName)
-      this.setState({ isDownloading: false }, () => Swal.fire({
-        icon: 'error',
-        title: this.props.t('download_error'),
-        text: error.message
-      }))
-    }
   }
 
   setUpCamera = async () => {
@@ -142,7 +94,7 @@ class OCRMode extends React.Component {
   }
 
   captureImage () {
-    if (this.stream && this.state.isPreviewRemoved && !this.state.isDownloading) {
+    if (this.stream && this.state.isPreviewRemoved) {
       this.setState(prevState => ({
         isBtnCaptureClicked: !prevState.isBtnCaptureClicked,
         isRecognizing: true,
@@ -181,7 +133,7 @@ class OCRMode extends React.Component {
   }
 
   pickImage(files) {
-    if (files.length === 0 && this.state.isDownloading) return
+    if (files.length === 0) return
     this.setState(() => ({
       imgFile: URL.createObjectURL(files[0]),
       isPreviewRemoved: false,
@@ -242,21 +194,8 @@ class OCRMode extends React.Component {
   }
 
   async recognizeImage(file) {
-    const trainedDataFiles = [
-      'eng.traineddata',
-      'ind.traineddata',
-      'ara.traineddata'
-    ]
-    const langCache = await caches.open('langFiles')
-    // await Promise.all(trainedDataFiles.map(file => langCache.add(file)))
     try {
-      const cachedFileURls = trainedDataFiles.map(file => langCache.match(file).then(response => response.url))
-      const { data } = await Tesseract.recognize(
-        file,
-        trainedDataFiles.map(file => file.replace('.traineddata', '')),
-        {
-          langPath: cachedFileURls,
-          // logger: info => console.log(info),
+      const { data } = await Tesseract.recognize(file, 'eng+ind+ara', {
           recognize_character: true,
           deskew: true,
           invert: true
@@ -476,17 +415,6 @@ class OCRMode extends React.Component {
               </div>
               )
         }
-        {this.state.isDownloading
-          ? (
-            <div className="fixed inset-0 w-screen h-full flex flex-col items-center justify-center text-white bg-black/50 backdrop-blur-sm animate__animated animate__fadeIn z-10">
-              <h3>{this.props.t('downloading_models')}</h3>
-              <span className="relative inline-block border border-white my-2 py-1 w-3/4 rounded-full overflow-hidden">
-                <span className="absolute top-0 bottom-0 left-0 h-full bg-white animate__animated animate__slideInLeft rounded-full" style={{ width: `${this.state.downloadingProgress}%` }}></span>
-              </span>
-              <h4>{this.state.downloadingProgress.toFixed(0)}%</h4>
-            </div>
-            )
-          : null}
         <RecognizedProduct
           props={this.props}
           isRecognitionModalOpened={this.state.isModalOpened}
