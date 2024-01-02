@@ -206,46 +206,55 @@ class IdentificationPage extends React.Component {
   }
 
   checkProductUpdate (truthState) {
-    const productsUrl = import.meta.env.VITE_PRODUCT_LIST_URL
-    this.setState({ isCheckingForUpdate: truthState })
-    fetch(productsUrl, {
-      mode: 'cors',
-      signal: timeOut(20).signal
-    }).then(response => response.json()).then(response => {
-      if (response?.date_updated !== undefined && Object.entries(response?.data?.product_list).length > 0) {
-        if (Date.parse(response.date_updated) > Date.parse(this.state.getDateUpdated)) {
-          Swal.fire({
-            title: this.props.t('update_available_title_alert'),
-            text: this.props.t('update_available_text_alert'),
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: 'green',
-            cancelButtonColor: 'red',
-            confirmButtonText: this.props.t('question_tag_confirmation.0'),
-            cancelButtonText: this.props.t('question_tag_confirmation.1'),
-          }).then((result) => {
-            if (result.isConfirmed) {
-              this.setState({
-                getDateUpdated: response.date_updated,
-                getTempProductList: response.data.product_list,
-                isCheckingForUpdate: false,
-                isSyncModalOpened: truthState
-              })
-            } else this.setState({ isCheckingForUpdate: false })
-          })
+    return new Promise((resolve, reject) => {
+      const productsUrl = import.meta.env.VITE_PRODUCT_LIST_URL
+      this.setState({ isCheckingForUpdate: truthState })
+      fetch(productsUrl, {
+        mode: 'cors',
+        signal: timeOut(20).signal
+      }).then(response => response.json()).then(response => {
+        if (response?.date_updated !== undefined && Object.entries(response?.data?.product_list).length > 0) {
+          if (Date.parse(response.date_updated) > Date.parse(this.state.getDateUpdated)) {
+            Swal.fire({
+              title: this.props.t('update_available_title_alert'),
+              text: this.props.t('update_available_text_alert'),
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: 'green',
+              cancelButtonColor: 'red',
+              confirmButtonText: this.props.t('question_tag_confirmation.0'),
+              cancelButtonText: this.props.t('question_tag_confirmation.1'),
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.setState({
+                  getDateUpdated: response.date_updated,
+                  getTempProductList: response.data.product_list,
+                  isCheckingForUpdate: false,
+                  isSyncModalOpened: truthState
+                })
+                resolve()
+              } else {
+                this.setState({ isCheckingForUpdate: false, isSyncBtnClicked: false })
+                resolve()
+              }
+            })
+          } else {
+            this.setState({ isCheckingForUpdate: false })
+            resolve()
+          }        
         } else {
           this.setState({ isCheckingForUpdate: false })
-        }        
-      } else {
+          Swal.fire(this.props.t('empty_data_alert'), '', 'warning')
+          reject(new Error(this.props.t('empty_data_alert')))
+        }
+      }).catch(error => {
+        let errorMsg = ''
+        if (error.message.includes('The user aborted a request.')) errorMsg = 'Request Timeout!'
+        else errorMsg = error.message
+        Swal.fire(this.props.t('check_update_error'), errorMsg, 'error')
         this.setState({ isCheckingForUpdate: false })
-        Swal.fire(this.props.t('empty_data_alert'), '', 'warning')
-      }
-    }).catch(error => {
-      let errorMsg = ''
-      if (error.message.includes('The user aborted a request.')) errorMsg = 'Request Timeout!'
-      else errorMsg = error.message
-      Swal.fire(this.props.t('check_update_error'), errorMsg, 'error')
-      this.setState({ isCheckingForUpdate: false })
+        reject(new Error(errorMsg))
+      })
     })
   }
 
@@ -360,16 +369,17 @@ class IdentificationPage extends React.Component {
             this.setState({ getTempProductList: [], isSyncBtnClicked: false }, () => this.loadProductData())
           })
         } else {
-          // this.checkProductUpdate(false)
-          const mergedProductList = this.mergeProductList(this.state.getTempProductList)
-          this.setState({ getProductList: mergedProductList }, () => {
-            this.sortProductList(this.state.sortBy)
-            this.saveProductData()
-            this.setState({ getTempProductList: [], isSyncBtnClicked: false }, () => this.loadProductData())
+          this.checkProductUpdate(false).then(() => {
+            if (this.state.getTempProductList.length > 0) {
+              const mergedProductList = this.mergeProductList(this.state.getTempProductList)
+              this.setState({ getProductList: mergedProductList }, () => {
+                this.sortProductList(this.state.sortBy)
+                this.saveProductData()
+                this.setState({ getTempProductList: [] }, () => this.loadProductData())
+              })
+            }
           })
         }
-      } else {
-        return
       }
     })
     this.onCloseModalHandler()

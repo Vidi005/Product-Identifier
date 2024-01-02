@@ -14,7 +14,7 @@ const MobileDisplayDetail = ({ t, selectedProduct }) => {
     return acc
   }, {})
   const renderClickableText = (text) => {
-    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+    const urlRegex = /(https?:\/\/[^\s]+)/g
     return text.split(urlRegex).map((part, i) => {
       if (i % 2 === 1) {
         return <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
@@ -25,30 +25,19 @@ const MobileDisplayDetail = ({ t, selectedProduct }) => {
   }
   return (
     <span className="product-detail md:hidden grow overflow-y-auto">
-      {Object.entries(detailProductVars).map(([key, val], i) => (
-        <React.Fragment key={key}>
-          {
-            key === 'modified_by' && selectedProduct.added_by === 'Admin'
+      {Object.entries(detailProductVars).map(([key, val], i) => {
+        val = renderClickableText(val)
+        return (
+          <React.Fragment key={key}>
+            {key === 'modified_by' && selectedProduct.added_by === 'Admin'
               ? <h4 className="product-title border-b border-b-green-900 dark:border-b-white mt-3 text-justify text-green-900 dark:text-white">{t(`product_vars.${i + titleOffsetArray}`)}</h4>
-              : <h4 className="product-title border-b border-b-green-900 dark:border-b-white mt-3 text-justify text-green-900 dark:text-white">{t(`product_vars.${i}`)}</h4>
-          }
-          {
-            key === 'name_tag' && selectedProduct.color_tag !== ''
+              : <h4 className="product-title border-b border-b-green-900 dark:border-b-white mt-3 text-justify text-green-900 dark:text-white">{t(`product_vars.${i}`)}</h4>}
+            {key === 'name_tag' && selectedProduct.color_tag !== ''
               ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{val === '' ? '-' : val}</p>
-              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
-          }
-          {/* {
-            key === 'description' && selectedProduct.description !== ''
-              ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{renderClickableText(val)}</p>
-              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
-          }
-          {
-            key === 'sources' && selectedProduct.sources !== ''
-              ? <p className="product-content px-0.5 text-justify text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{renderClickableText(val)}</p>
-              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>
-          } */}
-        </React.Fragment>
-      ))}
+              : <p className="product-content text-justify text-green-900 dark:text-white">{val === '' ? '-' : val}</p>}
+          </React.Fragment>
+        )
+      })}
     </span>
   )
 }
