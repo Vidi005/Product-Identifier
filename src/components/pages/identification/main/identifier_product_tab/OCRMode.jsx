@@ -248,7 +248,7 @@ class OCRMode extends React.Component {
       'ara.traineddata'
     ]
     const langCache = await caches.open('langFiles')
-    await Promise.all(trainedDataFiles.map(file => langCache.add(file)))
+    // await Promise.all(trainedDataFiles.map(file => langCache.add(file)))
     try {
       const cachedFileURls = trainedDataFiles.map(file => langCache.match(file).then(response => response.url))
       const { data } = await Tesseract.recognize(
