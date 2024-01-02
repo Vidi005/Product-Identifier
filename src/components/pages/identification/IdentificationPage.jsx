@@ -36,7 +36,7 @@ class IdentificationPage extends React.Component {
       isProductListLoading: false,
       isSyncBtnClicked: false,
       isSyncModalOpened: false,
-      isAutoCheckUpdate: false,
+      isAutoCheckUpdate: true,
       isDetailModalOpened: false,
       isSavedToLocalStorage: false,
       isDetailBtnClicked: false,

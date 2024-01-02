@@ -24,7 +24,7 @@ class ScanBarcodeMode extends React.Component {
   componentDidMount() {
     const barcodeReader = new Html5Qrcode('barcode-scanner')
     this.barcodeReader = barcodeReader
-    if (innerWidth > innerHeight) {
+    if (innerHeight > innerWidth) {
       alert(this.props.t('device_orientation_alert'))
       this.setState({ aspectRatio: 4 / 3 }, () => {
         this.initScanner(barcodeReader, this.state.aspectRatio)

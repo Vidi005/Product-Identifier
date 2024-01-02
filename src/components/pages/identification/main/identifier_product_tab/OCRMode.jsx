@@ -53,7 +53,7 @@ class OCRMode extends React.Component {
   }
 
   async downloadAndCacheLangFiles() {
-    const langPath = `${import.meta.env.BASE_URL}/models/`
+    const langPath = 'models/'
     const trainedDataFiles = ['eng.traineddata', 'ind.traineddata', 'ara.traineddata']
     const cacheName = 'langFiles'
     const cache = await caches.open(cacheName)
@@ -65,7 +65,7 @@ class OCRMode extends React.Component {
     try {
       let progress = 0
       const downloadPromises = trainedDataFiles.map(async (file) => {
-        const response = await fetch(`${langPath}/${file}`, { mode: 'cors' }).catch(error => {
+        const response = await fetch(`${langPath}${file}`, { mode: 'cors' }).catch(error => {
           Swal.fire({
             icon: 'error',
             title: this.props.t('download_error'),
@@ -99,8 +99,8 @@ class OCRMode extends React.Component {
 
   setUpCamera = async () => {
     if (location.protocol.startsWith('https') || location.hostname === 'localhost') {
-      let idealAspectRatio = 3 / 4
-      if (window.innerHeight < window.innerWidth) idealAspectRatio = 4 / 3
+      let idealAspectRatio = 1
+      if (window.innerHeight > window.innerWidth) idealAspectRatio = 4 / 3
       else idealAspectRatio = 3 / 4
       const constraints = {
         audio: false,
@@ -248,6 +248,7 @@ class OCRMode extends React.Component {
       'ara.traineddata'
     ]
     const langCache = await caches.open('langFiles')
+    await Promise.all(trainedDataFiles.map(file => langCache.add(file)))
     try {
       const cachedFileURls = trainedDataFiles.map(file => langCache.match(file).then(response => response.url))
       const { data } = await Tesseract.recognize(
