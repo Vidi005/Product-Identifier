@@ -53,7 +53,7 @@ class OCRMode extends React.Component {
   }
 
   async downloadAndCacheLangFiles() {
-    const langPath = import.meta.env.VITE_LANG_PATH_MODELS_URL
+    const langPath = `${import.meta.env.BASE_URL}/models/`
     const trainedDataFiles = ['eng.traineddata', 'ind.traineddata', 'ara.traineddata']
     const cacheName = 'langFiles'
     const cache = await caches.open(cacheName)
