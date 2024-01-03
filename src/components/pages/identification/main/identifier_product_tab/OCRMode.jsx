@@ -51,11 +51,14 @@ class OCRMode extends React.Component {
 
   setUpCamera = async () => {
     if (location.protocol.startsWith('https') || location.hostname === 'localhost') {
+      let idealAspectRatio = 1
+      if (window.innerHeight > window.innerWidth) idealAspectRatio = 4 / 3
+      else idealAspectRatio = 3 / 4
       const constraints = {
         audio: false,
         video: {
           facingMode: { exact: this.state.facingMode },
-          aspectRatio: { ideal: 3 / 4 }
+          aspectRatio: { ideal: idealAspectRatio }
         }
       }
       try {

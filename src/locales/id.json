@@ -81,9 +81,12 @@
     "recognized_vendor": "Pemasok Diketahui",
     "unlisted_product": "Produk Belum Terdaftar",
     "no_text_recognized": "Tidak ada teks yang dikenali.",
+    "barcode_read": "Barcode terbaca:",
     "no_barcode_found": "Tidak ada ID produk yang ditemukan",
     "canvas_is_null": "Elemen Canvas null.",
     "recognition_error": "Gagal mengekstrak teks.",
     "color_changer": ["Normal", "Invers", "Monokrom", "Invers Monokrom"],
-    "conversion_error": "Gagal mengkonversi canvas ke blob."
+    "conversion_error": "Gagal mengkonversi canvas ke blob.",
+    "not_found": "Tidak ditemukan",
+    "page_not_found": "Halaman Tidak ditemukan"
 }

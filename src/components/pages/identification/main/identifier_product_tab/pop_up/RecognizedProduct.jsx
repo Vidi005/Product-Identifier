@@ -78,7 +78,7 @@ const RecognizedProduct = ({ props, isRecognitionModalOpened, recognizedProduct,
               >{props.t('recognized_vendor')}
               </Dialog.Title>
               <span className="inline-flex flex-col my-2 items-center justify-center text-justify text-green-900 dark:text-white">
-                <h3 className="pb-2">{props.t('recognized_vendor')}</h3>
+                <br />
                 <h4 className="vendor-title w-full border-b border-b-green-900 dark:border-b-white text-justify">{props.t(`product_vars.3`)}</h4>
                 <p className="w-full px-1 py-0.5" >{recognizedVendor.vendor}</p>
                 <h4 className="tag-title w-full border-b border-b-green-900 dark:border-b-white mt-3 text-justify">{props.t(`product_vars.6`)}</h4>
@@ -120,10 +120,10 @@ const RecognizedProduct = ({ props, isRecognitionModalOpened, recognizedProduct,
                 </button>
               </span>
               <Dialog.Title as="h3" className="text-center text-green-900 dark:text-white"
-              >{props.t('identified_product')}
+              >{props.t('unlisted_product')}
               </Dialog.Title>
               <span className="inline-flex flex-col my-2 items-center justify-center text-justify text-green-900 dark:text-white break-all">
-                <h3 className="pb-2">{props.t('unlisted_product')}</h3>
+                <br />
                 <h4>{recognizedText}</h4>
               </span>
             </Dialog.Panel>

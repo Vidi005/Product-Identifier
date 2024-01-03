@@ -18,7 +18,7 @@ const App = () => (
       <Route path="/identify" element={<IdentificationPage />}/>
       <Route path="/account" element={<AccountPage />}/>
       {/* <Route path="/account/settings" element={<Profile />}/> */}
-      <Route path="*" element={<NoPage />}/>
+      <Route path="*" element={<NoPage t={i18n.t} />}/>
     </Routes>
   </React.Fragment>
 )

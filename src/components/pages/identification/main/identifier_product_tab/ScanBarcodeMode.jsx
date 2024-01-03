@@ -24,10 +24,13 @@ class ScanBarcodeMode extends React.Component {
   componentDidMount() {
     const barcodeReader = new Html5Qrcode('barcode-scanner')
     this.barcodeReader = barcodeReader
-    if (innerHeight < innerWidth) {
-      alert(this.props.t('device_orientation_alert'))
+    if (innerHeight > innerWidth) {
+      this.setState({ aspectRatio: 4 / 3 }, () => {
+        this.initScanner(barcodeReader, this.state.aspectRatio)
+      })
     }
-    this.setState({ aspectRatio: 0.75 }, () => {
+    else this.setState({ aspectRatio: 0.75 }, () => {
+      alert(this.props.t('device_orientation_alert'))
       this.initScanner(barcodeReader, this.state.aspectRatio)
     })
   }
@@ -212,7 +215,7 @@ class ScanBarcodeMode extends React.Component {
 
   findScannedBarcode(scannedBarcode) {
     const dataCopy = [...this.props.getProductList]
-    const foundProduct = dataCopy.find(productItem => productItem.product_id && productItem.product_id.toString().includes(scannedBarcode))
+    const foundProduct = dataCopy.find(productItem => productItem.product_ids && productItem.product_ids.toString().includes(scannedBarcode))
     if (foundProduct !== undefined) {
       this.setState({ getScannedProduct: foundProduct, getScannedResult: '', isModalOpened: true })
     } else this.setState({ getScannedProduct: {}, isModalOpened: true })
