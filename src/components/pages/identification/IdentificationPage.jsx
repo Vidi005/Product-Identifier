@@ -479,6 +479,7 @@ class IdentificationPage extends React.Component {
         </Helmet>
         <HeaderContainer
           props={this.props}
+          headerTitle={this.props.t('identify_products')}
           changeLanguage={this.changeLanguage.bind(this)}
           setDisplayMode={this.setDisplayMode.bind(this)}
           isDarkModeEnabled={this.state.isDarkModeEnabled}

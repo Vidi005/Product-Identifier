@@ -470,6 +470,10 @@ class AccountPage extends React.Component {
   }
 
   render() {
+    let headerTitle = this.props.t("app_name")
+    if (this.state.isUserLoggedIn && this.state.isUserActivated) {
+      headerTitle = this.props.t('product_data')
+    } else headerTitle = this.props.t('app_name')
     return (
       <div className="account-page h-screen flex flex-col dark:bg-black overflow-y-auto">
         {
@@ -487,6 +491,7 @@ class AccountPage extends React.Component {
         }
         <HeaderContainer
           props={this.props}
+          headerTitle={headerTitle}
           changeLanguage={this.changeLanguage.bind(this)}
           setDisplayMode={this.setDisplayMode.bind(this)}
           isDarkModeEnabled={this.state.isDarkModeEnabled}

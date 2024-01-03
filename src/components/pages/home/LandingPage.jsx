@@ -104,12 +104,12 @@ class LandingPage extends React.Component {
          <link rel="canonical" href="https://product-identifier.pages.dev" />
        </Helmet>
        <HeaderComponent
-         props={this.props}
+         headerTitle={'Product Identifier'}
          changeLanguage={this.changeLanguage.bind(this)}
          setDisplayMode={this.setDisplayMode.bind(this)}
          isDarkModeEnabled={this.state.isDarkModeEnabled}
        />
-       <MainContainer/>
+       <MainContainer t={this.props.t}/>
        <FooterComponent/>
       </div>
     )

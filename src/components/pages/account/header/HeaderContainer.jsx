@@ -2,11 +2,11 @@ import { Menu, Switch, Transition } from "@headlessui/react"
 import React, { Fragment } from "react"
 import { withTranslation } from "react-i18next"
 
-const HeaderContainer = ({ props, changeLanguage, setDisplayMode, isDarkModeEnabled }) => {
+const HeaderContainer = ({ props, headerTitle, changeLanguage, setDisplayMode, isDarkModeEnabled }) => {
   const { t } = props
   return (
     <header className="identifier-app__header relative flex flex-nowrap items-center justify-between max-w-full bg-green-700 p-1 shadow-xl">
-      <h3 className="grow font-serif text-white p-1">{t("identify_products")}</h3>
+      <h3 className="grow font-serif text-white p-1">{headerTitle}</h3>
       <section className="w-fit flex items-center pl-1">
         <Switch
           checked={isDarkModeEnabled}

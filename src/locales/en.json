@@ -1,6 +1,7 @@
 {
     "app_name": "Product Identifier",
     "identify_products": "Identify Products",
+    "homepage_bottom_text": "If there are some bugs, invalid contents, and you want to contribute for adding products data, please contact us with given e-mail below:",
     "sign_in": "Sign In | Product Identifier",
     "login": "Log In",
     "username": "Username",
