@@ -51,14 +51,11 @@ class OCRMode extends React.Component {
 
   setUpCamera = async () => {
     if (location.protocol.startsWith('https') || location.hostname === 'localhost') {
-      let idealAspectRatio = 1
-      if (window.innerHeight > window.innerWidth) idealAspectRatio = 4 / 3
-      else idealAspectRatio = 3 / 4
       const constraints = {
         audio: false,
         video: {
           facingMode: { exact: this.state.facingMode },
-          aspectRatio: { ideal: idealAspectRatio }
+          aspectRatio: { ideal: 3 / 4 }
         }
       }
       try {
@@ -105,8 +102,8 @@ class OCRMode extends React.Component {
       const canvas = this.canvasRef.current
       const video = this.cameraRef.current
       if (canvas) {
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
+        canvas.width = video.clientWidth
+        canvas.height = video.clientHeight
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height)
         this.setState({
           imgFile: canvas.toDataURL('image/png'),
@@ -132,17 +129,17 @@ class OCRMode extends React.Component {
     }
   }
 
-  pickImage(files) {
-    if (files.length === 0) return
+  pickImage(event) {
+    if (event.target.files.length === 0) return
     this.setState(() => ({
-      imgFile: URL.createObjectURL(files[0]),
+      imgFile: URL.createObjectURL(event.target.files[0]),
       isPreviewRemoved: false,
       isRecognizing: true,
       getRecognizedProduct: {},
       getRecognizedVendor: {},
       getRecognizedText: ''
     }), () => {
-      const file = files[0]
+      const file = event.target.files[0]
       const validImageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'heic', 'svg']
       const fileExtension = file.name.split('.').pop().toLowerCase()
       if (!validImageExtensions.includes(fileExtension)) {

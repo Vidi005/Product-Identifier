@@ -24,13 +24,10 @@ class ScanBarcodeMode extends React.Component {
   componentDidMount() {
     const barcodeReader = new Html5Qrcode('barcode-scanner')
     this.barcodeReader = barcodeReader
-    if (innerHeight > innerWidth) {
-      this.setState({ aspectRatio: 4 / 3 }, () => {
-        this.initScanner(barcodeReader, this.state.aspectRatio)
-      })
-    }
-    else this.setState({ aspectRatio: 0.75 }, () => {
+    if (innerHeight < innerWidth) {
       alert(this.props.t('device_orientation_alert'))
+    }
+    this.setState({ aspectRatio: 0.75 }, () => {
       this.initScanner(barcodeReader, this.state.aspectRatio)
     })
   }
@@ -118,10 +115,10 @@ class ScanBarcodeMode extends React.Component {
     })
   }
 
-  pickImage(files) {
-    if (files.length === 0 && !this.barcodeReader && !this.barcodeReader.isScanning) return
+  pickImage(event) {
+    if (event.target.files.length === 0 && !this.barcodeReader && !this.barcodeReader.isScanning) return
     this.barcodeReader.stop()
-    const file = files[0]
+    const file = event.target.files[0]
     const reader = new FileReader()
     reader.onloadend = () => {
       const canvas = document.createElement('canvas')
