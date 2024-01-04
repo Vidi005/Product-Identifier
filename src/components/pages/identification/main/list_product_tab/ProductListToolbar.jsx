@@ -12,7 +12,7 @@ import ProductListSync from "./ProductListSync"
 
 const ProductListToolbar = ({ props, isUserLoggedIn, isUserActivated, changeItemsPerPage, searchItem, sortItems, onClickSyncBtn, onClickEditBtn, onClickImportBtn, onClickExportBtn, onClickDeleteAllBtn, isSyncBtnClicked, isCheckingForUpdate }) => (
   <div className="product-toolbar sticky top-0 z-10">
-    <section className="content__product-toolbar flex m-1 px-2 py-1 bg-green-100/75 dark:bg-gray-800/50 border border-b md:border-none border-green-900 dark:border-white backdrop-blur-sm rounded-lg shadow-md md:shadow-none dark:shadow-white/50">
+    <section className="content__product-toolbar flex m-1 px-2 md:px-0 py-1 bg-green-100/75 dark:bg-gray-800/50 border border-b md:border-none border-green-900 dark:border-white backdrop-blur-sm rounded-lg shadow-md md:shadow-none dark:shadow-white/50">
       <ProductListEntries t={props.t} changeItemsPerPage={changeItemsPerPage}/>
       <ProductListSearch t={props.t} searchItem={searchItem}/>
       {(!isUserLoggedIn || !isUserActivated) && <ProductListSync t={props.t} onClickSyncBtn={onClickSyncBtn} isSyncBtnClicked={isSyncBtnClicked}/>}

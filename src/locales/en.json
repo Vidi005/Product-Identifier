@@ -11,7 +11,7 @@
     "keep_signed_in": "Keep Me Signed In",
     "signing_in": "Signing in...",
     "product_data": "Product Data",
-    "account_settings": "Account Settings",
+    "account": ["Settings", "Logout"],
     "storage_availability": "Your browser does not support Local Storage/Cookies!\nPlease enable cookies in your browser settings or disable incognito mode.\nThank you.",
     "storage_title_alert": "Failed to save data to device!",
     "storage_text_alert": "Please enable cookies and web storage in your browser settings.",

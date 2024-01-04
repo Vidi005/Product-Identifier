@@ -11,7 +11,7 @@
     "keep_signed_in": "Ingat Saya",
     "signing_in": "Memuat...",
     "product_data": "Data Produk",
-    "account_settings": "Pengaturan Akun",
+    "account": ["Pengaturan", "Keluar"],
     "storage_availability": "Browser Anda tidak mendukung Local Storage/Cookies pada browser Anda tidak diizinkan!\nSilakan izinkan cookies di pengaturan browser Anda atau ganti browser Anda serta tidak mengaktifkan incognito mode (mode penyamaran).\nTerima kasih",
     "storage_title_alert": "Gagal menyimpan data di perangkat!",
     "storage_text_alert": "Pastikan Anda telah mengaktifkan cookies dan web storage di browser Anda.",

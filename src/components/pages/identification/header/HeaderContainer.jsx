@@ -3,7 +3,10 @@ import React, { Fragment } from "react"
 
 const HeaderContainer = ({ headerTitle, changeLanguage, setDisplayMode, isDarkModeEnabled }) => (
   <header className="identifier-app__header relative flex flex-nowrap items-center justify-between w-full bg-green-700 p-1 shadow-xl">
-    <h3 className="grow font-serif text-white p-1">{headerTitle}</h3>
+    <section className="grow flex items-center p-1">
+      <img className="hidden md:block max-h-6 object-contain object-center mr-2" src="images/pi-logo-dark.svg" alt="Logo" />
+      <h3 className="grow font-serif text-white">{headerTitle}</h3>
+    </section>
     <section className="w-fit flex items-center pl-1">
       <Switch
         checked={isDarkModeEnabled}

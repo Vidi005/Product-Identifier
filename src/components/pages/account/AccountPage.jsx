@@ -326,7 +326,7 @@ class AccountPage extends React.Component {
       this.setState({ getFilteredProducts: sortProductsByDate }, () => this.loadProductsPerPage())
     } else if (sort === this.props.t('sort_products.3')) {
       const sortProductsByDateDesc = dataCopy.sort((a, b) => {
-        b.date_created ? new Date(b.date_created) : new Date(0) - a.date_created ? new Date(a.date_created) : new Date(0)
+        return b.date_created ? new Date(b.date_created) - (a.date_created ? new Date(a.date_created) : 0)  : -1
       })
       this.setState({ getFilteredProducts: sortProductsByDateDesc }, () => this.loadProductsPerPage())
     } else if (sort === this.props.t('sort_products.4')) {
@@ -470,10 +470,10 @@ class AccountPage extends React.Component {
   }
 
   render() {
-    let headerTitle = this.props.t("app_name")
+    let headerTitle = 'Product Identifier'
     if (this.state.isUserLoggedIn && this.state.isUserActivated) {
       headerTitle = this.props.t('product_data')
-    } else headerTitle = this.props.t('app_name')
+    } else headerTitle = 'Product Identifier'
     return (
       <div className="account-page h-screen flex flex-col dark:bg-black overflow-y-auto">
         {
@@ -491,6 +491,8 @@ class AccountPage extends React.Component {
         }
         <HeaderContainer
           props={this.props}
+          isUserLoggedIn={this.state.isUserLoggedIn}
+          isUserActivated={this.state.isUserActivated}
           headerTitle={headerTitle}
           changeLanguage={this.changeLanguage.bind(this)}
           setDisplayMode={this.setDisplayMode.bind(this)}

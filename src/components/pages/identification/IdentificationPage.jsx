@@ -407,14 +407,14 @@ class IdentificationPage extends React.Component {
       this.setState({ getFilteredProducts: sortProductsByNameDesc }, () => this.loadProductsPerPage())
     } else if (sort === this.props.t('sort_products.2')) {
       const sortProductsByDate = dataCopy.sort((a, b) => {
-        const dateA = a.date_created ? new Date(a.date_created) : new Date(0)
-        const dateB = b.date_created ? new Date(b.date_created) : new Date(0)
+        const dateA = a.date_created ? Date.parse(a.date_created) : new Date(0)
+        const dateB = b.date_created ? Date.parse(b.date_created) : new Date(0)
         return dateA - dateB
       })
       this.setState({ getFilteredProducts: sortProductsByDate }, () => this.loadProductsPerPage())
     } else if (sort === this.props.t('sort_products.3')) {
       const sortProductsByDateDesc = dataCopy.sort((a, b) => {
-        b.date_created ? new Date(b.date_created) : new Date(0) - a.date_created ? new Date(a.date_created) : new Date(0)
+        return b.date_created ? Date.parse(b.date_created) - (a.date_created ? Date.parse(a.date_created) : 0) : -1
       })
       this.setState({ getFilteredProducts: sortProductsByDateDesc }, () => this.loadProductsPerPage())
     } else if (sort === this.props.t('sort_products.4')) {

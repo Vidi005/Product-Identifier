@@ -6,6 +6,7 @@ import LandingPage from "./pages/home/LandingPage"
 import IdentificationPage from "./pages/identification/IdentificationPage"
 import i18n from "../utils/localization"
 import AccountPage from "./pages/account/AccountPage"
+import Profile from "./pages/account/settings/Profile"
 
 const App = () => (
   <React.Fragment>
@@ -17,7 +18,7 @@ const App = () => (
       <Route path="/" element={<LandingPage />}/>
       <Route path="/identify" element={<IdentificationPage />}/>
       <Route path="/account" element={<AccountPage />}/>
-      {/* <Route path="/account/settings" element={<Profile />}/> */}
+      <Route path="/account/settings" element={<Profile />}/>
       <Route path="*" element={<NoPage t={i18n.t} />}/>
     </Routes>
   </React.Fragment>
