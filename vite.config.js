@@ -16,7 +16,8 @@ export default defineConfig({
         name: 'Product Identifier',
         short_name: 'Product Identifier',
         description: 'Identifying Product Names and Vendors using Text Recognition and Barcode Scanner',
-        theme_color: '#ffffff',
+        theme_color: '#14532d',
+        orientation: 'portrait',
         icons: [
           {
             src: 'favicon.ico',
