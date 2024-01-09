@@ -7,8 +7,8 @@ import ProductListContainer from "./list_product_tab/ProductListContainer"
 
 const MainContainer = ({ props, state, changeItemsPerPage, searchItem, changeUpdateSetting, onClickSyncBtn, syncProductData, sortItems, onSelectNavHandler, onClickDetailBtn, findProductByIdx, onCloseModal }) => (
   <main className="identifier-app__main grow lg:px-20">
-    <Tab.Group as={"section"} className="tab-group h-full md:p-1 bg-green-50 dark:bg-black rounded-lg shadow-lg">
-      <Tab.List className="grid grid-cols-2 gap-2 sticky top-0 m-1 md:p-0 p-1 font-medium text-base bg-green-900/20 dark:bg-white/20 rounded-xl shadow-inner">
+    <Tab.Group as={"section"} className="tab-group h-full pt-1 md:pt-2 bg-green-50 dark:bg-black rounded-lg shadow-lg">
+      <Tab.List className="grid grid-cols-2 gap-2 sticky top-0 md:p-0 p-1 font-medium text-base bg-green-900/20 dark:bg-white/20 rounded-xl shadow-inner">
         {en.tab_list.map((tab, index) => (
           <Tab
             key={tab}

@@ -102,9 +102,11 @@ class IdentificationPage extends React.Component {
     const getUpdateSettingFromLocal = localStorage.getItem(this.state.UPDATE_SETTING_STORAGE_KEY)
     try {
       const parsedUpdateSetting = JSON.parse(getUpdateSettingFromLocal)
-      if (parsedUpdateSetting !== undefined) {
-        this.setState({ isAutoCheckUpdate: parsedUpdateSetting }, () => this.checkProductData())
-      }
+      if (parsedUpdateSetting !== undefined && parsedUpdateSetting !== null) {
+        this.setState({ isAutoCheckUpdate: parsedUpdateSetting }, () => {
+          if (this.state.isAutoCheckUpdate) this.checkProductUpdate(true)
+        })
+      } else this.checkProductUpdate(true)
     } catch (error) {
       localStorage.removeItem(this.state.UPDATE_SETTING_STORAGE_KEY)
       alert(`Error: ${error.message}\n${this.props.t('reload')}`)
@@ -119,7 +121,6 @@ class IdentificationPage extends React.Component {
       const parsedProductData = JSON.parse(getProductDataFromLocal)
       if (parsedDateUpdated !== undefined && parsedProductData !== undefined) {
         this.loadProductData()
-        if (this.state.isAutoCheckUpdate) this.checkProductUpdate(true)
       } else this.fetchProductList()
     } catch (error) {
       localStorage.removeItem(this.state.PRODUCT_STORAGE_KEY)
@@ -283,9 +284,12 @@ class IdentificationPage extends React.Component {
       signal: timeOut(20).signal
     }).then(response => response.json()).then(response => {
       if (Object.entries(response?.data?.product_list).length > 0) {
+        const uniqueProductList = Array.from(new Set(response.data.product_list.map(item => item.product_name))).map(productName => {
+          response.data.product_list.find(item => item.product_name === productName)
+        })
         this.setState({
           getDateUpdated: response?.date_updated || new Date().toISOString(),
-          getProductList: response.data.product_list,
+          getProductList: uniqueProductList,
           isProductListLoading: false,
           isSyncBtnClicked: false
         }, () => {
@@ -378,7 +382,7 @@ class IdentificationPage extends React.Component {
                 this.setState({ getTempProductList: [] }, () => this.loadProductData())
               })
             }
-          })
+          }).finally(() => this.setState({ isSyncBtnClicked: false }))
         }
       }
     })
@@ -471,7 +475,7 @@ class IdentificationPage extends React.Component {
 
   render() {
     return (
-      <div className="identification-page h-screen flex flex-col dark:bg-black overflow-y-auto">
+      <div className="identification-page h-[100dvh] flex flex-col dark:bg-black overflow-y-auto">
         <Helmet>
           <title>{this.props.t('identify_products')}</title>
           <meta name="description" content="Identify Products by QR Code, Barcode, Image, or Text Input."/>
