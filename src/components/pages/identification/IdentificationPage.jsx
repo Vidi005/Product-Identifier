@@ -227,9 +227,17 @@ class IdentificationPage extends React.Component {
               cancelButtonText: this.props.t('question_tag_confirmation.1'),
             }).then((result) => {
               if (result.isConfirmed) {
+                const uniqueProductNames = new Set()
+                const uniqueProductList = response.data.product_list.filter(item => {
+                  if (!uniqueProductNames.has(item.product_name)) {
+                    uniqueProductNames.add(item.product_name)
+                    return true
+                  }
+                  return false
+                })
                 this.setState({
                   getDateUpdated: response.date_updated,
-                  getTempProductList: response.data.product_list,
+                  getTempProductList: uniqueProductList,
                   isCheckingForUpdate: false,
                   isSyncModalOpened: truthState
                 })
@@ -284,8 +292,13 @@ class IdentificationPage extends React.Component {
       signal: timeOut(20).signal
     }).then(response => response.json()).then(response => {
       if (Object.entries(response?.data?.product_list).length > 0) {
-        const uniqueProductList = Array.from(new Set(response.data.product_list.map(item => item.product_name))).map(productName => {
-          response.data.product_list.find(item => item.product_name === productName)
+        const uniqueProductNames = new Set()
+        const uniqueProductList = response.data.product_list.filter(item => {
+          if (!uniqueProductNames.has(item.product_name)) {
+            uniqueProductNames.add(item.product_name)
+            return true
+          }
+          return false
         })
         this.setState({
           getDateUpdated: response?.date_updated || new Date().toISOString(),
