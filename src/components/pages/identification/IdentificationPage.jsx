@@ -488,7 +488,7 @@ class IdentificationPage extends React.Component {
 
   render() {
     return (
-      <div className="identification-page h-[100dvh] flex flex-col dark:bg-black overflow-y-auto">
+      <div className="identification-page h-screen flex flex-col dark:bg-black overflow-y-auto">
         <Helmet>
           <title>{this.props.t('identify_products')}</title>
           <meta name="description" content="Identify Products by QR Code, Barcode, Image, or Text Input."/>

@@ -42,10 +42,10 @@ const LoginInputForm = ({ t, formRef, username, password, inputType, isFocused, 
           onBlur={onBlurHandler}
           required
         />
-        <button className="p-2" type="button" onClick={() => changeVisibilityPassword()}>
+        <button className="p-2 duration-200" type="button" onClick={() => changeVisibilityPassword()}>
           {inputType === 'password'
-            ? <img className="max-h-6 object-contain dark:invert" src="images/hide-icon.svg" alt="Show Password" />
-            : <img className="max-h-6 object-contain dark:invert" src="images/show-icon.svg" alt="Hide Password" />
+            ? <img className="max-h-6 object-contain dark:invert" src="images/show-icon.svg" alt="Hide Password" />
+            : <img className="max-h-6 object-contain dark:invert" src="images/hide-icon.svg" alt="Show Password" />
           }
         </button>
       </div>
