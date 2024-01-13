@@ -13,7 +13,7 @@ const LargeDisplayDetail = ({ t, selectedProduct }) => {
   }, {})
   const renderClickableText = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
-    return text.split(urlRegex).map((part, i) => {
+    return text.toString().split(urlRegex).map((part, i) => {
       if (i % 2 === 1) {
         return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="hover:text-blue-700 dark:hover:text-blue-500 active:text-violet-700 active:dark:text-violet-500"><u>{part}</u></a>
       } else {
