@@ -2,10 +2,26 @@ import React from "react"
 import { withTranslation } from "react-i18next"
 
 const LargeDisplayDetail = ({ t, selectedProduct }) => {
-  const unusedVars = ['index', 'color_tag']
-  const detailProductVars = Object.entries(selectedProduct).reduce((acc, [key, value]) => {
+  const unusedVars = ['index', 'colorTag']
+  const modifiedProductVars = {
+    index: selectedProduct.index,
+    productName: selectedProduct.product_name,
+    nameTag: selectedProduct.name_tag,
+    productIds: selectedProduct.product_ids,
+    category: selectedProduct.category,
+    vendor: selectedProduct.vendor,
+    origin: selectedProduct.origin,
+    dateCreated: selectedProduct.date_created,
+    colorTag: selectedProduct.color_tag,
+    description: selectedProduct.description,
+    alternatives: selectedProduct.alternatives,
+    sources: selectedProduct.sources,
+    addedBy: selectedProduct.added_by,
+    modifiedBy: selectedProduct.modified_by
+  }
+  const detailProductVars = Object.entries(modifiedProductVars).reduce((acc, [key, value]) => {
     if (!unusedVars.includes(key)) {
-      if ((key === 'added_by' && value === 'Admin') || (key === 'modified_by' && (value === 'Admin' || value === ''))) {
+      if ((key === 'addedBy' && value === 'Admin') || (key === 'modifiedBy' && (value === 'Admin' || value === ''))) {
         return acc
       } else acc[key] = value
     }
@@ -28,13 +44,13 @@ const LargeDisplayDetail = ({ t, selectedProduct }) => {
           {Object.entries(detailProductVars).map(([key, val], i) => {
             val = renderClickableText(val === '' ? '-' : val)
             return (
-              <tr className="product-item border-b border-b-green-900 dark:border-b-white leading-loose text-justify text-lg text-green-900 dark:text-white" key={key}>
-                {key === 'modified_by' && selectedProduct.added_by === 'Admin'
-                  ? <td className="product-title font-bold">{t(`product_vars.${i + 1}`)}</td>
-                  : <td className="product-title font-bold">{t(`product_vars.${i}`)}</td>}
+              <tr className="product-item border-b border-b-green-900 dark:border-b-white leading-loose text-justify text-lg text-green-900 dark:text-white align-top" key={key}>
+                {key === 'modifiedBy' && modifiedProductVars.addedBy === 'Admin'
+                  ? <td className="product-title font-bold whitespace-nowrap">{t(`product_vars_mod.${i + 1}`)}</td>
+                  : <td className="product-title font-bold whitespace-nowrap">{t(`product_vars_mod.${i}`)}</td>}
                 <td>:</td>
-                {key === 'name_tag' && selectedProduct.color_tag !== ''
-                  ? <td className="product-content pl-1 text-white" style={{ backgroundColor: selectedProduct.color_tag }}>{val}</td>
+                {key === 'nameTag' && modifiedProductVars.colorTag !== ''
+                  ? <td className="product-content pl-1 text-white" style={{ backgroundColor: modifiedProductVars.colorTag }}>{val}</td>
                   : <td className="product-content pl-1">{val}</td>}
               </tr>
             )

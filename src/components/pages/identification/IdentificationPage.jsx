@@ -64,7 +64,6 @@ class IdentificationPage extends React.Component {
     if (isStorageExist('')) {
       this.checkDisplayMode()
       this.checkLanguageData()
-      this.checkUpdateSetting()
       this.checkProductData()
     } else {
       return
@@ -174,6 +173,7 @@ class IdentificationPage extends React.Component {
       const parsedProductData = JSON.parse(getProductDataFromLocal)
       if (parsedDateUpdated !== null && parsedProductData !== null) {
         if (Object.keys(parsedProductData).length > 0) {
+          this.checkUpdateSetting()
           this.setState({
             getDateUpdated: parsedDateUpdated,
             getProductList: parsedProductData,
