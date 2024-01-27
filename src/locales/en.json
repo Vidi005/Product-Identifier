@@ -1,6 +1,9 @@
 {
     "app_name": "Product Identifier",
     "identify_products": "Identify Products",
+    "homepage_title_text": "Our Support for Palestine",
+    "homepage_main_text": "Support Palestine by refraining from purchasing Israeli products and standing with their struggle for freedom. Join the BDS movement to end international support for Israel&apos;s oppression of Palestinians.",
+    "homepage_link_text": "Why we are advised to do it?",
     "homepage_bottom_text": "If there are some bugs, invalid contents, and you want to contribute for adding products data, please contact us with given e-mail below:",
     "sign_in": "Sign In | Product Identifier",
     "login": "Log In",
